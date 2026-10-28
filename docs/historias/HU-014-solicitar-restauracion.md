@@ -4,7 +4,7 @@
 |---|---|
 | **Prioridad (MoSCoW)** | Must |
 | **Estimación** | 5 story points |
-| **Sprint** | 4 |
+| **Sprint** | 2 |
 | **Épica / Feature** | E3 Restauración de datos / F3.1 Solicitud y autorización de restauración |
 | **Depende de** | HU-008 |
 | **Origen en OAS** | Relevamiento (hackeo y pago para recuperar los datos); Backup Empresarial (restauración granular o total). |
@@ -110,7 +110,7 @@ Esta historia **no** introduce un patrón nuevo; usa los puntos de restauración
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-008 (los puntos de restauración se generan al verificar los respaldos).
-- **Estimación:** 5 SP, Sprint 4.
+- **Estimación:** 5 SP, Sprint 2.
 
 **Chequeo de Definition of Ready:**
 

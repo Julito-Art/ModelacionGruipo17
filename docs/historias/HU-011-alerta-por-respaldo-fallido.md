@@ -4,7 +4,7 @@
 |---|---|
 | **Prioridad (MoSCoW)** | Must |
 | **Estimación** | 5 story points |
-| **Sprint** | 3 |
+| **Sprint** | 2 |
 | **Épica / Feature** | E2 Monitoreo y alertas / F2.2 Alertas y notificaciones |
 | **Depende de** | HU-005 |
 | **Origen en OAS** | Relevamiento (el incidente sufrido por la empresa); Diagnóstico. |
@@ -103,7 +103,7 @@ Esta historia usa el **Singleton**: es el `PlanificadorDeRespaldos` (la única i
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-005 (reintentos: de ahí sale el estado FALLIDA).
-- **Estimación:** 5 SP, Sprint 3.
+- **Estimación:** 5 SP, Sprint 2.
 
 **Chequeo de Definition of Ready:**
 

@@ -1,0 +1,19 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Nueva solicitud de restauración
+==
+Servidor | ^TANGO^
+..
+<b>Punto de restauración
+(X) 24/10/2026 23:00 · diferencial (hace 2 días)
+( ) 27/09/2026 23:00 · incremental (hace 29 días)
+..
+<b>Tipo de restauración
+( ) Total | (X) Granular
+Elementos a restaurar | "                    " | <color:red>Indicá al menos un elemento a restaurar (2)
+Motivo | "                    " | <color:red>El motivo es obligatorio (2)
+..
+[ Enviar solicitud ] | [ Cancelar ]
+}
+@endsalt

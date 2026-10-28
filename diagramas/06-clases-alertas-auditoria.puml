@@ -1,0 +1,78 @@
+@startuml 06-clases-alertas-auditoria
+title Vista 3 – Alertas y auditoría
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor<<Singleton>> #FFE6CC
+  BackgroundColor<<Multiton>> #FFE6CC
+  BackgroundColor<<Strategy>> #DDF0DD
+  BackgroundColor<<Adapter>> #DDE8F8
+  BackgroundColor<<externo>> #EEEEEE
+}
+hide empty members
+class GestorDeAlertas {
+  - notificador: INotificador
+  - auditoria: ServicioDeAuditoria
+  - abiertas: List<Alerta>
+  + GestorDeAlertas(notificador: INotificador, auditoria: ServicioDeAuditoria)
+  + alertarFalla(tarea: TareaDeRespaldo, ahora: DateTime): Alerta
+  + evaluarAtraso(servidor: ServidorOrigen, ultimoExitoso: DateTime, ahora: DateTime): Alerta [0..1]
+  + cerrarAlertas(servidor: ServidorOrigen, ahora: DateTime): void
+  + alertasAbiertas(): List<Alerta>
+}
+class Alerta {
+  - id: long
+  - tipo: TipoDeAlerta
+  - severidad: Severidad
+  - estado: EstadoAlerta
+  - servidor: ServidorOrigen
+  - mensaje: String
+  - tareaOrigen: TareaDeRespaldo [0..1]
+  - creada: DateTime
+  - cerrada: DateTime [0..1]
+  + Alerta(tipo: TipoDeAlerta, severidad: Severidad, servidor: ServidorOrigen, mensaje: String, tareaOrigen: TareaDeRespaldo, ahora: DateTime)
+  + elevarSeveridad(nueva: Severidad): void
+  + cerrar(ahora: DateTime): void
+  + destinatarios(): List<Rol>
+  + estado(): EstadoAlerta
+  + tipo(): TipoDeAlerta
+  + servidor(): ServidorOrigen
+}
+interface INotificador {
+  + notificar(alerta: Alerta, roles: List<Rol>): void
+}
+class NotificadorPorCorreo {
+  - servidorSmtp: String
+  - remitente: String
+  + notificar(alerta: Alerta, roles: List<Rol>): void
+}
+class ServicioDeAuditoria {
+  + registrar(usuario: Usuario, accion: AccionAuditada, objetivo: String, resultado: String, ahora: DateTime): RegistroDeAuditoria
+  + consultar(usuario: String, accion: AccionAuditada, servidor: ServidorOrigen, desde: DateTime, hasta: DateTime): List<RegistroDeAuditoria>
+}
+class RegistroDeAuditoria <<inmutable>> {
+  - id: long
+  - usuario: String
+  - accion: AccionAuditada
+  - objetivo: String
+  - resultado: String
+  - fechaHora: DateTime
+}
+class TareaDeRespaldo
+class PlanificadorDeRespaldos <<Singleton>>
+class ServicioDeRestauracion
+INotificador <|.. NotificadorPorCorreo
+PlanificadorDeRespaldos "1" --> "1" GestorDeAlertas : usa
+PlanificadorDeRespaldos "1" --> "1" ServicioDeAuditoria : usa
+Alerta "*" --> "0..1" TareaDeRespaldo : origen
+GestorDeAlertas "1" --> "1" INotificador : notifica con
+GestorDeAlertas "1" o-- "*" Alerta : abiertas
+ServicioDeAuditoria "1" --> "*" RegistroDeAuditoria : registra
+PlanificadorDeRespaldos ..> TareaDeRespaldo : crea
+GestorDeAlertas ..> ServicioDeAuditoria
+ServicioDeRestauracion ..> PlanificadorDeRespaldos : respaldo previo
+ServicioDeRestauracion ..> ServicioDeAuditoria
+@enduml

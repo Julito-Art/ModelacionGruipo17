@@ -1,0 +1,34 @@
+@startuml 07-estados-tarea
+title Diagrama de estados de TareaDeRespaldo
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam state {
+  BackgroundColor #EEF5FF
+  BorderColor #3A6EA5
+}
+hide empty description
+
+[*] --> PROGRAMADA : TareaDeRespaldo(servidor, tipo, disparador, usuario, ahora)\n[ciclo del Planificador o respaldo manual]
+PROGRAMADA --> EN_EJECUCION : iniciar(ahora)\n[no hay otro respaldo en curso del servidor]
+EN_EJECUCION --> VERIFICANDO : marcarVerificando(idRespaldoNube)\n[respaldo enviado a la nube]
+VERIFICANDO --> COMPLETADA : completar(ahora)\n[Acronis valida el respaldo como íntegro]
+EN_EJECUCION --> EN_COLA : marcarEnCola()\n[sin conexión a Internet]
+VERIFICANDO --> EN_COLA : marcarEnCola()\n[sin conexión a Internet]
+EN_COLA --> EN_EJECUCION : iniciar(ahora)\n[conexión recuperada]
+EN_EJECUCION --> EN_REINTENTO : registrarFallo(motivo, ahora)\n[error del respaldo y reintentos < 3]
+VERIFICANDO --> EN_REINTENTO : registrarFallo(motivo, ahora)\n[respaldo no íntegro y reintentos < 3]
+EN_REINTENTO --> EN_EJECUCION : iniciar(ahora)\n[pasó 1 minuto]
+EN_EJECUCION --> FALLIDA : registrarFallo(motivo, ahora)\n[error del respaldo y reintentos = 3]
+VERIFICANDO --> FALLIDA : registrarFallo(motivo, ahora)\n[respaldo no íntegro y reintentos = 3]
+COMPLETADA --> [*]
+FALLIDA --> [*]
+
+note right of COMPLETADA
+  Estado final. Genera un
+  PuntoDeRestauracion.
+end note
+note right of FALLIDA
+  Estado final. Genera una
+  Alerta CRITICA (tipo FALLA).
+end note
+@enduml

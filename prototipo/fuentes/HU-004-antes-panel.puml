@@ -1,0 +1,12 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Panel
+==
+{#
+<b>Servidor | <b>Estado
+STRUMIS | EN_EJECUCION
+TANGO | EN_REINTENTO
+}
+}
+@endsalt

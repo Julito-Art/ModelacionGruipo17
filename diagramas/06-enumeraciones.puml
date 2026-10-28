@@ -1,0 +1,88 @@
+@startuml 06-enumeraciones
+title Enumeraciones del modelo de diseño
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor<<Singleton>> #FFE6CC
+  BackgroundColor<<Multiton>> #FFE6CC
+  BackgroundColor<<Strategy>> #DDF0DD
+  BackgroundColor<<Adapter>> #DDE8F8
+  BackgroundColor<<externo>> #EEEEEE
+}
+hide empty members
+left to right direction
+enum ServidorOrigen {
+  STRUMIS
+  TANGO
+}
+enum TipoDeRespaldo {
+  COMPLETO
+  INCREMENTAL
+  DIFERENCIAL
+}
+enum TipoDeDisparo {
+  PROGRAMADO
+  MANUAL
+  PREVIO_A_RESTAURACION
+}
+enum EstadoDeTarea {
+  PROGRAMADA
+  EN_COLA
+  EN_EJECUCION
+  VERIFICANDO
+  EN_REINTENTO
+  COMPLETADA
+  FALLIDA
+}
+enum TipoDeRestauracion {
+  TOTAL
+  GRANULAR
+}
+enum EstadoDeSolicitud {
+  PENDIENTE
+  AUTORIZADA
+  RECHAZADA
+  EN_EJECUCION
+  COMPLETADA
+  FALLIDA
+}
+enum TipoDeAlerta {
+  FALLA
+  ATRASO
+}
+enum Severidad {
+  ADVERTENCIA
+  CRITICA
+}
+enum EstadoAlerta {
+  ABIERTA
+  CERRADA
+}
+enum Rol {
+  RESPONSABLE_DE_RESPALDOS
+  DIRECCION
+  GERENTE_DE_ADMINISTRACION
+}
+enum AccionAuditada {
+  INICIO_DE_SESION
+  ALTA_DE_USUARIO
+  BAJA_DE_USUARIO
+  CAMBIO_DE_ROL
+  REGISTRO_DE_SERVIDOR
+  CAMBIO_DE_CONEXION
+  CAMBIO_DE_POLITICA
+  RESPALDO_INICIADO
+  RESPALDO_FINALIZADO
+  CICLO_OMITIDO
+  ALERTA_GENERADA
+  RESTAURACION_SOLICITADA
+  RESTAURACION_AUTORIZADA
+  RESTAURACION_RECHAZADA
+  RESTAURACION_EJECUTADA
+  SIMULACRO_EJECUTADO
+  INFORME_GENERADO
+}
+@enduml

@@ -1,0 +1,15 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Política de respaldo
+==
+<color:red>Error: valor inválido
+..
+Servidor | <b>STRUMIS
+Intervalo | "11     "
+Retención | "30     "
+Hora diferencial | "23:00  "
+..
+[ Guardar ] | [ Cancelar ]
+}
+@endsalt

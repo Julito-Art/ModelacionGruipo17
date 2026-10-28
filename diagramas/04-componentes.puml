@@ -1,0 +1,77 @@
+@startuml 04-componentes
+title Diagrama de componentes del SGR (monolito modular en capas con puertos y adaptadores)
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam componentStyle uml2
+skinparam nodesep 40
+skinparam ranksep 55
+
+package "SGR (una sola unidad desplegable)" {
+  package "Presentación" {
+    [Interfaz Web] as UI
+  }
+  package "Aplicación" {
+    [Servicio de Acceso] as ACC
+    [Servicio de Políticas] as POL
+    [Planificador] as PLA
+    [Servicio de Respaldo] as RESP
+    [Gestor de Agentes] as AGE
+    [Servicio de Restauración] as REST
+    [Servicio de Alertas] as ALE
+    [Servicio de Auditoría] as AUD
+    [Servicio de Informes] as INF
+  }
+  package "Puertos (interfaces)" {
+    interface "IProveedorNube" as IPN <<puerto>>
+    interface "INotificador" as INO <<puerto>>
+  }
+  package "Infraestructura" {
+    [Adaptador Acronis] as ADA
+    [Notificador por Correo] as NOT
+    [Repositorios] as REP
+  }
+}
+database "BD del SGR\n(SQL)" as DB
+cloud "Acronis Cloud" as ACR
+cloud "Servicio de correo" as MAIL
+
+UI -down-> ACC
+UI -down-> POL
+UI -down-> RESP
+UI -down-> REST
+UI -down-> ALE
+UI -down-> AUD
+UI -down-> INF
+UI -down-> AGE
+
+PLA -down-> POL
+PLA -down-> RESP
+PLA -down-> ALE : detecta atrasos
+INF -down-> RESP
+RESP -down-> AGE
+REST -down-> AGE
+RESP -down-> ALE
+REST -down-> ALE
+
+AGE -down-> IPN : usa
+ALE -down-> INO : usa
+ADA -up-|> IPN
+NOT -up-|> INO
+
+ADA -down-> ACR : HTTPS (TLS 1.2+)
+NOT -down-> MAIL : SMTP sobre TLS
+REP -down-> DB : SQL
+
+ACC ..> AUD : registra
+POL ..> AUD : registra
+RESP ..> AUD : registra
+REST ..> AUD : registra
+
+note right of ADA
+  Única pieza que conoce la API
+  de Acronis (patrón Adapter).
+  Todos los servicios de la capa
+  de aplicación acceden a los datos
+  mediante los Repositorios.
+end note
+@enduml

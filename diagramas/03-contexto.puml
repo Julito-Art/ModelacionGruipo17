@@ -1,0 +1,41 @@
+@startuml 03-contexto
+title Diagrama de contexto del SGR
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ArrowFontSize 11
+left to right direction
+
+actor "Responsable\nde Respaldos" as RES
+actor "Dirección" as DIR
+actor "Gerente de\nAdministración" as GER
+
+rectangle "SGR\nSistema de Gestión\nde Respaldos" as SGR #DDEEFF
+
+node "Acronis Cloud\n(sistema externo)" as ACR
+node "Servicio de correo\n(sistema externo)" as MAIL
+database "Servidor Strumis\n(SQL, existente)" as STR
+database "Servidor Tango\n(Microsoft SQL, existente)" as TAN
+
+RES --> SGR : configuración de servidores,\npolítica y credenciales de Acronis;\nórdenes de respaldo manual;\nsolicitudes de restauración;\nconsultas
+SGR --> RES : estado de respaldos,\nalertas, resultados
+
+DIR --> SGR : autorización o rechazo de\nrestauraciones; altas de usuarios;\nconsultas de estado, auditoría\ne informes
+SGR --> DIR : alertas críticas, solicitudes\npendientes, estado de respaldos\n(solo lectura), informes
+
+GER --> SGR : consulta del estado de TANGO
+SGR --> GER : estado de los respaldos de TANGO
+
+SGR --> ACR : órdenes de respaldo y\nrestauración, credenciales
+ACR --> SGR : estado de tareas, puntos de\nrestauración, resultado de la validación
+
+SGR --> MAIL : notificaciones por correo
+
+STR ..> ACR : datos respaldados (cifrados)\nvía agente instalado
+TAN ..> ACR : datos respaldados (cifrados)\nvía agente instalado
+
+note bottom of SGR
+  El SGR no recibe los datos de negocio:
+  viajan del agente de cada servidor a Acronis Cloud.
+  El SGR solo ordena, supervisa y registra.
+end note
+@enduml

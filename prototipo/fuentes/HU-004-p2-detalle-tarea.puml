@@ -1,0 +1,15 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Detalle de la tarea #482
+==
+Servidor | TANGO
+Tipo y disparo | INCREMENTAL · PROGRAMADO
+Estado | <b>Reintentando (1 de 3)
+Motivo del último error | <color:red>Acronis no respondió: tiempo de espera agotado (3)
+Próximo reintento | 14:08:00
+Ciclos omitidos hoy | 0
+..
+[ Volver al panel ] | <i>(4) No existe un botón para cancelar el respaldo
+}
+@endsalt

@@ -1,0 +1,135 @@
+@startuml 06-clases-nucleo
+title Vista 1 – Núcleo de respaldo (Singleton y Multiton)
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor<<Singleton>> #FFE6CC
+  BackgroundColor<<Multiton>> #FFE6CC
+  BackgroundColor<<Strategy>> #DDF0DD
+  BackgroundColor<<Adapter>> #DDE8F8
+  BackgroundColor<<externo>> #EEEEEE
+}
+hide empty members
+class PlanificadorDeRespaldos <<Singleton>> {
+  - {static} instancia: PlanificadorDeRespaldos
+  - {static} INTERVALO_ENTRE_REINTENTOS_MIN: int = 1
+  - politicas: Map<ServidorOrigen, PoliticaDeRespaldo>
+  - PlanificadorDeRespaldos()
+  + {static} obtenerInstancia(): PlanificadorDeRespaldos
+  + definirPolitica(politica: PoliticaDeRespaldo): void
+  + ejecutarCiclo(servidor: ServidorOrigen, ahora: DateTime): TareaDeRespaldo [0..1]
+  + lanzarRespaldoManual(servidor: ServidorOrigen, usuario: Usuario, ahora: DateTime): TareaDeRespaldo
+  + lanzarRespaldoPrevioARestauracion(servidor: ServidorOrigen, usuario: Usuario, ahora: DateTime): TareaDeRespaldo
+  + reintentar(tarea: TareaDeRespaldo, ahora: DateTime): void
+  + reanudarEnCola(servidor: ServidorOrigen, ahora: DateTime): void
+  + detectarAtrasos(ahora: DateTime): List<Alerta>
+  - lanzar(servidor: ServidorOrigen, tipo: TipoDeRespaldo, disparador: TipoDeDisparo, usuario: Usuario, ahora: DateTime): TareaDeRespaldo
+  - procesarResultado(tarea: TareaDeRespaldo, ahora: DateTime): void
+}
+class AgenteDeRespaldo <<Multiton>> {
+  - {static} instancias: Map<ServidorOrigen, AgenteDeRespaldo>
+  - servidor: ServidorOrigen
+  - tareaEnCurso: TareaDeRespaldo [0..1]
+  - ultimoExitoso: DateTime [0..1]
+  - fechaUltimoCompleto: DateTime [0..1]
+  - fechaUltimoDiferencial: DateTime [0..1]
+  - idUltimoCompleto: String [0..1]
+  - idUltimoRespaldo: String [0..1]
+  - AgenteDeRespaldo(servidor: ServidorOrigen)
+  + {static} obtenerInstancia(servidor: ServidorOrigen): AgenteDeRespaldo
+  + {static} existeInstancia(servidor: ServidorOrigen): boolean
+  + ejecutarRespaldo(tarea: TareaDeRespaldo): void
+  + hayRespaldoEnCurso(): boolean
+  + restaurar(solicitud: SolicitudDeRestauracion): boolean
+  + registrarExito(tarea: TareaDeRespaldo): void
+  + ultimoExitoso(): DateTime
+  + fechaUltimoCompleto(): DateTime
+  + fechaUltimoDiferencial(): DateTime
+  + puntoBaseCompleto(): String
+  + puntoBaseUltimo(): String
+}
+class PoliticaDeRespaldo {
+  + {static} INTERVALO_MIN: int = 5
+  + {static} INTERVALO_MAX: int = 10
+  + {static} INTERVALO_POR_DEFECTO: int = 5
+  - servidor: ServidorOrigen
+  - intervaloMinutos: int
+  - horaDiferencial: LocalTime
+  - retencionDias: int
+  + PoliticaDeRespaldo(servidor: ServidorOrigen)
+  + validar(): boolean
+  + cumpleObjetivoDePerdida(): boolean
+  + proximaEjecucion(desde: DateTime): DateTime
+  + tipoParaCiclo(agente: AgenteDeRespaldo, ahora: DateTime): TipoDeRespaldo
+  + servidor(): ServidorOrigen
+  + intervaloMinutos(): int
+  + retencionDias(): int
+}
+class TareaDeRespaldo {
+  + {static} MAX_REINTENTOS: int = 3
+  - id: long
+  - servidor: ServidorOrigen
+  - tipo: TipoDeRespaldo
+  - disparador: TipoDeDisparo
+  - estado: EstadoDeTarea
+  - creada: DateTime
+  - inicio: DateTime [0..1]
+  - fin: DateTime [0..1]
+  - reintentos: int
+  - idRespaldoNube: String [0..1]
+  - motivoFallo: String [0..1]
+  + TareaDeRespaldo(servidor: ServidorOrigen, tipo: TipoDeRespaldo, disparador: TipoDeDisparo, usuario: Usuario, ahora: DateTime)
+  + iniciar(ahora: DateTime): void
+  + marcarVerificando(idRespaldoNube: String): void
+  + completar(ahora: DateTime): void
+  + registrarFallo(motivo: String, ahora: DateTime): void
+  + marcarEnCola(): void
+  + puedeReintentar(): boolean
+  + estaEnCurso(): boolean
+  + generarPuntoDeRestauracion(retencionDias: int): PuntoDeRestauracion
+  + estado(): EstadoDeTarea
+  + servidor(): ServidorOrigen
+  + tipo(): TipoDeRespaldo
+  + idRespaldoNube(): String
+  + motivoFallo(): String
+  + fin(): DateTime
+}
+class PuntoDeRestauracion {
+  - id: long
+  - servidor: ServidorOrigen
+  - tipo: TipoDeRespaldo
+  - fechaHora: DateTime
+  - idRespaldoNube: String
+  - verificado: boolean
+  - vigenteHasta: DateTime
+  + PuntoDeRestauracion(tarea: TareaDeRespaldo, retencionDias: int)
+  + estaVigente(ahora: DateTime): boolean
+  + servidor(): ServidorOrigen
+  + idRespaldoNube(): String
+}
+interface IEstrategiaDeRespaldo <<Strategy>>
+interface IProveedorNube <<Adapter>>
+class GestorDeAlertas
+class ServicioDeAuditoria
+class Usuario
+PlanificadorDeRespaldos "1" --> "0..2" PoliticaDeRespaldo : gestiona
+PlanificadorDeRespaldos "1" --> "1" GestorDeAlertas : usa
+PlanificadorDeRespaldos "1" --> "1" ServicioDeAuditoria : usa
+AgenteDeRespaldo "1" --> "1" IProveedorNube : proveedor
+AgenteDeRespaldo "1" o-- "3" IEstrategiaDeRespaldo : estrategias
+AgenteDeRespaldo "1" --> "0..1" TareaDeRespaldo : en curso
+TareaDeRespaldo "1" --> "0..1" PuntoDeRestauracion : genera
+TareaDeRespaldo "*" --> "0..1" Usuario : lanzada por
+PlanificadorDeRespaldos ..> AgenteDeRespaldo : obtiene (Multiton)
+PlanificadorDeRespaldos ..> TareaDeRespaldo : crea
+PoliticaDeRespaldo ..> AgenteDeRespaldo : consulta
+IEstrategiaDeRespaldo ..> IProveedorNube : usa
+GestorDeAlertas ..> ServicioDeAuditoria
+note bottom of TareaDeRespaldo
+  Se omiten getters triviales que no se usan en los
+  diagramas de estados y de secuencia.
+end note
+@enduml

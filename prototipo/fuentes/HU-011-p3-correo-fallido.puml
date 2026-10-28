@@ -1,0 +1,14 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Alertas abiertas
+==
+<color:red><b>No se pudo enviar el correo de esta alerta. (3)
+<color:red>La alerta sigue ABIERTA y se muestra aquí.
+..
+{#
+<b>Severidad | <b>Tipo | <b>Servidor | <b>Desde | <b>Estado
+<color:red><b>CRITICA | Falla | TANGO | 14:07 | ABIERTA
+}
+}
+@endsalt

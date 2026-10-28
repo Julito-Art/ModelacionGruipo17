@@ -1,0 +1,88 @@
+@startuml 03-casos-de-uso
+title Casos de uso del SGR
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam usecase {
+  BackgroundColor #EEF5FF
+  BorderColor #3A6EA5
+}
+left to right direction
+
+actor "Usuario del SGR" as USR
+actor "Responsable\nde Respaldos" as RES
+actor "Dirección" as DIR
+actor "Gerente de\nAdministración" as GER
+actor "Acronis Cloud" as ACR
+actor "Servicio de\ncorreo" as MAIL
+
+rectangle "SGR - Sistema de Gestión de Respaldos" {
+  usecase "CU-01\nRegistrar servidores\nde origen" as CU01
+  usecase "CU-02\nConfigurar conexión\ncon Acronis Cloud" as CU02
+  usecase "CU-03\nDefinir política\nde respaldo" as CU03
+  usecase "CU-04\nEjecutar respaldo" as CU04
+  usecase "CU-05\nVerificar integridad\ndel respaldo" as CU05
+  usecase "CU-06\nReintentar respaldo\nfallido" as CU06
+  usecase "CU-07\nEncolar respaldo\nsin conexión" as CU07
+  usecase "CU-08\nLanzar respaldo\nmanual" as CU08
+  usecase "CU-09\nConsultar estado e\nhistorial de respaldos" as CU09
+  usecase "CU-10\nNotificar falla\nde respaldo" as CU10
+  usecase "CU-11\nNotificar atraso\nde respaldo" as CU11
+  usecase "CU-12\nSolicitar\nrestauración" as CU12
+  usecase "CU-13\nAutorizar o rechazar\nrestauración" as CU13
+  usecase "CU-14\nEjecutar\nrestauración" as CU14
+  usecase "CU-15\nRealizar simulacro\nde restauración" as CU15
+  usecase "CU-16\nAutenticarse" as CU16
+  usecase "CU-17\nGestionar usuarios\ny roles" as CU17
+  usecase "CU-18\nConsultar auditoría" as CU18
+  usecase "CU-19\nGenerar informe\nmensual" as CU19
+  usecase "CU-20\nRegistrar acción\nen auditoría" as CU20
+}
+
+RES -- CU01
+RES -- CU02
+RES -- CU03
+RES -- CU08
+RES -- CU09
+RES -- CU12
+RES -- CU14
+RES -- CU15
+RES -- CU10
+RES -- CU11
+
+DIR -- CU10
+DIR -- CU11
+DIR -- CU13
+DIR -- CU17
+DIR -- CU18
+DIR -- CU19
+
+GER -- CU09
+USR -- CU16
+USR <|-- RES
+USR <|-- DIR
+USR <|-- GER
+DIR -- CU09
+
+CU04 ..> CU05 : <<include>>
+CU08 ..> CU04 : <<include>>
+CU14 ..> CU04 : <<include>>
+CU06 ..> CU04 : <<extend>>
+CU07 ..> CU04 : <<extend>>
+CU10 ..> CU04 : <<extend>>
+
+CU02 -- ACR
+CU04 -- ACR
+CU05 -- ACR
+CU14 -- ACR
+CU15 -- ACR
+CU10 -- MAIL
+CU11 -- MAIL
+
+note right of CU16
+  Es precondición de todos los casos
+  de uso de actores humanos.
+  CU-20 lo invocan todos los casos que
+  ejecutan acciones relevantes (RN-13).
+  No se dibuja include para no saturar.
+end note
+@enduml

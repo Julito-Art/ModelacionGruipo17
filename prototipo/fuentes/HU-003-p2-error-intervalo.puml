@@ -1,0 +1,14 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Política de respaldo
+==
+Servidor | <b>STRUMIS | <color:red>Sin protección: todavía no hay política guardada
+..
+Intervalo de respaldo (minutos) | "11     " | <color:red><b>El intervalo debe estar entre 5 y 10 minutos (2)
+Retención de puntos de restauración (días) | "30     "
+Hora del diferencial diario | "23:00  "
+..
+[ Guardar política ] | [ Cancelar ]
+}
+@endsalt

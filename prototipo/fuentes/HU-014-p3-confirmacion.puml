@@ -1,0 +1,16 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Solicitud enviada
+==
+<color:green><b>La solicitud #S-12 quedó PENDIENTE de autorización de Dirección. (3)
+..
+Servidor | TANGO
+Punto | 24/10/2026 23:00 · diferencial
+Tipo | TOTAL
+Motivo | Pérdida de datos por ataque
+Solicitante | resp.prueba@prometva.test
+..
+[ Volver al inicio ]
+}
+@endsalt

@@ -1,0 +1,15 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Política de respaldo
+==
+Servidor | <b>STRUMIS | <color:red>Sin protección: todavía no hay política guardada (3)
+..
+Intervalo de respaldo (minutos) | "5      " | <i>Entre 5 y 10 · recomendado: 5 (1)
+Retención de puntos de restauración (días) | "30     "
+Hora del diferencial diario | "23:00  " | <i>Fuera del horario laboral
+Esquema de tipos | <i>Completo inicial + incrementales + diferencial diario
+..
+[ Guardar política ] | [ Cancelar ] | <i>(4) No hay atajo para aplicar la misma política a TANGO
+}
+@endsalt

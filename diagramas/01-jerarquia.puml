@@ -1,0 +1,16 @@
+@startmindmap 01-jerarquia
+* SGR
+** E1 Respaldo automatizado en la nube
+*** F1.1 Conexión y configuración de respaldos
+*** F1.2 Ejecución automática y a demanda
+*** F1.3 Verificación de integridad
+** E2 Monitoreo y alertas
+*** F2.1 Panel e historial de respaldos
+*** F2.2 Alertas y notificaciones
+** E3 Restauración de datos
+*** F3.1 Solicitud y autorización de restauración
+*** F3.2 Ejecución y prueba de restauración
+** E4 Seguridad, auditoría e informes
+*** F4.1 Acceso y usuarios
+*** F4.2 Auditoría e informes
+@endmindmap

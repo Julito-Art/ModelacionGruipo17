@@ -1,0 +1,19 @@
+@startsalt
+scale 1.8
+{+
+<b>Correo recibido
+==
+De | sgr@prometva.test
+Para | resp.prueba@prometva.test
+Asunto | <b>[SGR] CRITICA: el respaldo de TANGO falló (1)
+..
+Servidor: TANGO
+Hora: 26/10/2026 14:07:02
+Motivo: Acronis no respondió: tiempo de espera agotado (2)
+..
+Qué hacer:
+1. Abrí el panel del SGR y revisá la alerta.
+2. Verificá la conexión a Internet del servidor TANGO.
+3. Si sigue fallando, lanzá un respaldo manual.
+}
+@endsalt

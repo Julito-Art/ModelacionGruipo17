@@ -1,0 +1,15 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Panel de respaldos
+==
+<i>Última actualización: 14:06:05 (se actualiza cada 60 segundos)
+{#
+<b>Servidor | <b>Estado de la tarea | <b>Último respaldo exitoso | <b>Próximo ciclo
+STRUMIS | Respaldando (incremental) | hace 4 min (1) | 14:10
+TANGO | Reintentando (1 de 3) (2) | hace 8 min | 14:10
+}
+..
+[ Ver detalle de la tarea ] | [ Actualizar ]
+}
+@endsalt

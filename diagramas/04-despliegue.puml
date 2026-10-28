@@ -1,0 +1,41 @@
+@startuml 04-despliegue
+title Diagrama de despliegue del SGR
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+node "Estación de trabajo\n(PC de Prometva)" as PC {
+  artifact "Navegador web" as BR
+}
+
+node "Servidor SGR\n(equipo dedicado, red de Prometva)" as SRV {
+  artifact "sgr-web\n(interfaz web)" as WEB
+  artifact "sgr-app\n(aplicación modular)" as APP
+  database "sgr-db\n(BD SQL)" as SDB
+}
+
+node "Servidor Strumis\n(existente)" as S1 {
+  artifact "Agente Acronis" as AG1
+  database "BD Strumis\n(SQL)" as DB1
+}
+
+node "Servidor Tango\n(existente)" as S2 {
+  artifact "Agente Acronis" as AG2
+  database "BD Tango\n(Microsoft SQL)" as DB2
+}
+
+cloud "Acronis Cloud\n(externo)" as ACR {
+  artifact "API y servicio\nde respaldo" as API
+}
+
+cloud "Servicio de correo\n(externo)" as MAIL
+
+BR --> WEB : HTTPS (443)
+WEB --> APP : llamadas internas
+APP --> SDB : SQL (TCP, red interna)
+APP --> API : HTTPS REST (TLS 1.2+)
+APP --> MAIL : SMTP sobre TLS (587)
+AG1 --> DB1 : lectura local
+AG2 --> DB2 : lectura local
+AG1 --> API : TLS 1.2+\n(datos cifrados AES-256)
+AG2 --> API : TLS 1.2+\n(datos cifrados AES-256)
+@enduml

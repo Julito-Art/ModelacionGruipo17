@@ -1,0 +1,92 @@
+@startuml 06-clases-restauracion-acceso
+title Vista 4 – Restauración, acceso e informes
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor<<Singleton>> #FFE6CC
+  BackgroundColor<<Multiton>> #FFE6CC
+  BackgroundColor<<Strategy>> #DDF0DD
+  BackgroundColor<<Adapter>> #DDE8F8
+  BackgroundColor<<externo>> #EEEEEE
+}
+hide empty members
+class SolicitudDeRestauracion {
+  - id: long
+  - punto: PuntoDeRestauracion
+  - tipo: TipoDeRestauracion
+  - elementos: List<String>
+  - motivo: String
+  - estado: EstadoDeSolicitud
+  - solicitante: Usuario
+  - resolutor: Usuario [0..1]
+  - motivoRechazo: String [0..1]
+  - fechaSolicitud: DateTime
+  + SolicitudDeRestauracion(punto: PuntoDeRestauracion, tipo: TipoDeRestauracion, elementos: List<String>, motivo: String, solicitante: Usuario, ahora: DateTime)
+  + autorizar(resolutor: Usuario): void
+  + rechazar(resolutor: Usuario, motivo: String): void
+  + iniciarEjecucion(): void
+  + completar(): void
+  + fallar(motivo: String): void
+  + estado(): EstadoDeSolicitud
+}
+class ServicioDeRestauracion {
+  + solicitar(punto: PuntoDeRestauracion, tipo: TipoDeRestauracion, elementos: List<String>, motivo: String, solicitante: Usuario, ahora: DateTime): SolicitudDeRestauracion
+  + autorizar(solicitud: SolicitudDeRestauracion, resolutor: Usuario): void
+  + rechazar(solicitud: SolicitudDeRestauracion, resolutor: Usuario, motivo: String): void
+  + ejecutar(solicitud: SolicitudDeRestauracion, usuario: Usuario, ahora: DateTime): void
+  + simulacro(punto: PuntoDeRestauracion, destinoAlternativo: String, usuario: Usuario, ahora: DateTime): int
+}
+class Usuario {
+  + {static} MAX_INTENTOS: int = 5
+  + {static} BLOQUEO_MINUTOS: int = 15
+  + {static} LONGITUD_MIN_CONTRASENA: int = 12
+  - id: long
+  - nombre: String
+  - correo: String
+  - rol: Rol
+  - activo: boolean
+  - hashContrasena: String
+  - intentosFallidos: int
+  - bloqueadoHasta: DateTime [0..1]
+  + Usuario(nombre: String, correo: String, rol: Rol, contrasena: String)
+  + cambiarRol(nuevo: Rol): void
+  + desactivar(): void
+  + autenticar(contrasena: String, ahora: DateTime): boolean
+  + estaBloqueado(ahora: DateTime): boolean
+  + tieneRol(rol: Rol): boolean
+  + validarContrasena(contrasena: String): boolean
+}
+class InformeMensual {
+  - anio: int
+  - mes: int
+  - porcentajeExitoso: Map<ServidorOrigen, double>
+  - fallos: Map<ServidorOrigen, int>
+  - mayorTiempoSinRespaldoMin: Map<ServidorOrigen, int>
+  - restauraciones: int
+  + generar(tareas: List<TareaDeRespaldo>, solicitudes: List<SolicitudDeRestauracion>): void
+  + exportarPdf(): byte[]
+}
+class PuntoDeRestauracion
+class TareaDeRespaldo
+class PlanificadorDeRespaldos <<Singleton>>
+class AgenteDeRespaldo <<Multiton>>
+class ServicioDeAuditoria
+PlanificadorDeRespaldos "1" --> "1" ServicioDeAuditoria : usa
+AgenteDeRespaldo "1" --> "0..1" TareaDeRespaldo : en curso
+TareaDeRespaldo "1" --> "0..1" PuntoDeRestauracion : genera
+TareaDeRespaldo "*" --> "0..1" Usuario : lanzada por
+SolicitudDeRestauracion "*" --> "1" PuntoDeRestauracion : sobre
+SolicitudDeRestauracion "*" --> "1" Usuario : solicitante
+SolicitudDeRestauracion "*" --> "0..1" Usuario : resolutor
+ServicioDeRestauracion "1" --> "*" SolicitudDeRestauracion : gestiona
+PlanificadorDeRespaldos ..> AgenteDeRespaldo : obtiene (Multiton)
+PlanificadorDeRespaldos ..> TareaDeRespaldo : crea
+ServicioDeRestauracion ..> PlanificadorDeRespaldos : respaldo previo
+ServicioDeRestauracion ..> AgenteDeRespaldo : restaurar
+ServicioDeRestauracion ..> ServicioDeAuditoria
+InformeMensual ..> TareaDeRespaldo
+InformeMensual ..> SolicitudDeRestauracion
+@enduml

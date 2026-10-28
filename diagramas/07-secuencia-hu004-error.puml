@@ -1,0 +1,64 @@
+@startuml 07-secuencia-hu004-error
+title HU-004 / HU-005 – Respaldo que falla: reintentos y alerta CRITICA (camino de error)
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam sequenceMessageAlign center
+' @clase PLA PlanificadorDeRespaldos
+' @clase AGE AgenteDeRespaldo
+' @clase TAR TareaDeRespaldo
+' @clase EST RespaldoIncremental
+' @clase ADA AcronisCloudAdapter
+' @clase ALE GestorDeAlertas
+' @clase ALR Alerta
+' @clase NOT NotificadorPorCorreo
+' @clase AUD ServicioDeAuditoria
+actor "Reloj del sistema" as CLK
+participant ":PlanificadorDeRespaldos" as PLA
+participant "agente:AgenteDeRespaldo\n[STRUMIS]" as AGE
+participant ":TareaDeRespaldo" as TAR
+participant ":RespaldoIncremental" as EST
+participant ":AcronisCloudAdapter" as ADA
+participant ":GestorDeAlertas" as ALE
+participant ":Alerta" as ALR
+participant ":NotificadorPorCorreo" as NOT
+participant ":ServicioDeAuditoria" as AUD
+
+== Primer intento: falla por un error del respaldo ==
+PLA -> AGE : ejecutarRespaldo(tarea)
+AGE -> TAR : iniciar(ahora)
+AGE -> EST : ejecutar(STRUMIS, proveedor, agente)
+EST -> ADA : ejecutarRespaldo(STRUMIS, INCREMENTAL, idPuntoBase)
+ADA --> EST : resultado (exitoso = false, motivo)
+EST --> AGE : resultado
+AGE -> TAR : registrarFallo(motivo, ahora)
+note right of TAR : reintentos = 1, estado = EN_REINTENTO
+PLA -> PLA : procesarResultado(tarea, ahora)
+PLA -> TAR : estado()
+
+== Reintentos (RN-06: hasta 3, uno por minuto) ==
+loop mientras estado = EN_REINTENTO
+  CLK -> PLA : reintentar(tarea, ahora)
+  PLA -> AGE : ejecutarRespaldo(tarea)
+  alt el reintento tiene éxito
+    AGE -> TAR : marcarVerificando(idRespaldoNube)
+    AGE -> ADA : validarRespaldo(idRespaldoNube)
+    AGE -> TAR : completar(ahora)
+  else el reintento falla
+    AGE -> TAR : registrarFallo(motivo, ahora)
+  end
+  PLA -> TAR : estado()
+end
+
+== Resultado final ==
+alt estado = FALLIDA (reintentos agotados)
+  PLA -> ALE : alertarFalla(tarea, ahora)
+  ALE -> ALR : Alerta(FALLA, CRITICA, STRUMIS, mensaje, tarea, ahora)
+  ALE -> ALR : destinatarios()
+  ALR --> ALE : [RESPONSABLE_DE_RESPALDOS, DIRECCION]
+  ALE -> NOT : notificar(alerta, roles)
+  ALE -> AUD : registrar(null, ALERTA_GENERADA, "STRUMIS", "CRITICA", ahora)
+  PLA -> AUD : registrar(null, RESPALDO_FINALIZADO, "STRUMIS", "FALLIDA", ahora)
+else estado = COMPLETADA (algún reintento tuvo éxito)
+  note over PLA : no se genera alerta (HU-005);\ncontinúa como en el flujo principal
+end
+@enduml

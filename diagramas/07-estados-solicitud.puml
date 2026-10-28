@@ -1,0 +1,20 @@
+@startuml 07-estados-solicitud
+title Diagrama de estados de SolicitudDeRestauracion
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam state {
+  BackgroundColor #EEF5FF
+  BorderColor #3A6EA5
+}
+hide empty description
+
+[*] --> PENDIENTE : SolicitudDeRestauracion(punto, tipo, elementos, motivo, solicitante, ahora)\n[el punto de restauración está verificado y vigente]
+PENDIENTE --> AUTORIZADA : autorizar(resolutor)\n[resolutor con rol DIRECCION y distinto del solicitante]
+PENDIENTE --> RECHAZADA : rechazar(resolutor, motivo)\n[resolutor con rol DIRECCION y motivo no vacío]
+AUTORIZADA --> EN_EJECUCION : iniciarEjecucion()\n[respaldo previo a restauración completado]
+EN_EJECUCION --> COMPLETADA : completar()\n[datos restaurados]
+EN_EJECUCION --> FALLIDA : fallar(motivo)\n[error al restaurar]
+RECHAZADA --> [*]
+COMPLETADA --> [*]
+FALLIDA --> [*]
+@enduml

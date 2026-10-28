@@ -1,0 +1,12 @@
+@startsalt
+scale 1.8
+{+
+<b>Correo recibido
+==
+De | sgr@prometva.test
+Para | resp.prueba@prometva.test
+Asunto | Alerta #A-17
+..
+Se generó una alerta.
+}
+@endsalt

@@ -4,7 +4,7 @@
 |---|---|
 | **Prioridad (MoSCoW)** | Must |
 | **Estimación** | 5 story points |
-| **Sprint** | 2 |
+| **Sprint** | 4 (fuera de los 3 sprints planificados; ver documento 02, sección 6) |
 | **Épica / Feature** | E3 Restauración de datos / F3.1 Solicitud y autorización de restauración |
 | **Depende de** | HU-008 |
 | **Origen en OAS** | Relevamiento (hackeo y pago para recuperar los datos); Backup Empresarial (restauración granular o total). |
@@ -26,6 +26,8 @@ Como **Responsable de Respaldos** quiero solicitar la restauración de STRUMIS o
 - **RN-12:** Los puntos de restauración se conservan 30 días.
 - **RN-13:** Solicitar una restauración es una acción relevante y se audita.
 - **RN-16:** Solo el Responsable de Respaldos solicita restauraciones.
+- **RN-21:** Motivo de 10 a 300 caracteres; en una restauración GRANULAR, de 1 a 20 elementos de hasta 100 caracteres cada uno, en texto libre.
+- **RN-22:** La lista de puntos se muestra paginada (20 por página), del más reciente al más antiguo, con rango de fechas (por defecto, los últimos 7 días) y la casilla «Solo diarios».
 
 ## Criterios de aceptación
 
@@ -69,7 +71,19 @@ Como **Responsable de Respaldos** quiero solicitar la restauración de STRUMIS o
 
 - **Dado** un servidor sin ningún punto de restauración vigente
 - **Cuando** el Responsable abre «Nueva solicitud de restauración» y lo elige
-- **Entonces** se muestra «No hay puntos de restauración vigentes para este servidor» y no se puede enviar la solicitud
+- **Entonces** se muestra la pantalla de estado vacío con «No hay puntos de restauración vigentes para este servidor» (pantalla 4) y no se puede enviar la solicitud
+
+**CA-8 – Elegir un punto entre muchos** · _camino normal_
+
+- **Dado** el servidor STRUMIS con 8.640 puntos vigentes (un incremental cada 5 minutos durante 30 días) y 2.016 de ellos en los últimos 7 días
+- **Cuando** el Responsable abre «Nueva solicitud de restauración» y elige STRUMIS
+- **Entonces** se listan los 20 puntos más recientes de los últimos 7 días con «Página 1 de 101»; al cambiar el rango de fechas o marcar «Solo diarios» la lista y la cantidad de páginas se actualizan, y si el rango no tiene puntos se muestra «No hay puntos de restauración en el rango elegido»
+
+**CA-9 – Límites del motivo y de los elementos** · _caso de error_
+
+- **Dado** un motivo de 9 o de 301 caracteres, o una restauración GRANULAR con 21 elementos o con un elemento de 101 caracteres
+- **Cuando** el Responsable envía
+- **Entonces** se rechaza con «El motivo debe tener entre 10 y 300 caracteres», «Se pueden indicar hasta 20 elementos» o «Cada elemento puede tener hasta 100 caracteres», según el caso, y no se crea ninguna solicitud
 
 ## Qué queda fuera de esta historia
 
@@ -83,6 +97,8 @@ Como **Responsable de Respaldos** quiero solicitar la restauración de STRUMIS o
 **Clases del diseño (documento 06) que toca:**
 
 - `ServicioDeRestauracion.solicitar(punto, tipo, elementos, motivo, solicitante, ahora)`.
+- `ServicioDeRestauracion.puntosVigentes(servidor, desde, hasta, soloDiarios, pagina, ahora)` y `contarPuntosVigentes(...)`: dan los puntos vigentes de un servidor, paginados (`TAMANO_PAGINA` = 20), para CA-1, CA-7 y CA-8.
+- `SolicitudDeRestauracion.validar(tipo, elementos, motivo)` y sus constantes `MOTIVO_MIN`, `MOTIVO_MAX`, `ELEMENTOS_MAX` y `ELEMENTO_LARGO_MAX` (CA-3, CA-4 y CA-9).
 - `SolicitudDeRestauracion` (constructor, estado inicial PENDIENTE; ver el diagrama de estados del documento 07), con `TipoDeRestauracion` (`TOTAL`, `GRANULAR`) y `elementos: List<String>`.
 - `PuntoDeRestauracion.estaVigente(ahora)` (vigente si `ahora < vigenteHasta`, con `vigenteHasta = fechaHora + 30 días`).
 - `Usuario.tieneRol(rol)` para el control de CA-6 y `ServicioDeAuditoria.registrar` con `AccionAuditada.RESTAURACION_SOLICITADA`.
@@ -94,6 +110,7 @@ Esta historia **no** introduce un patrón nuevo; usa los puntos de restauración
 - [Pantalla 1 – Nueva solicitud de restauración](../../prototipo/HU-014-p1-solicitud.png)
 - [Pantalla 2 – Errores de validación](../../prototipo/HU-014-p2-errores.png)
 - [Pantalla 3 – Solicitud enviada (PENDIENTE)](../../prototipo/HU-014-p3-confirmacion.png)
+- [Pantalla 4 – Servidor sin puntos vigentes (estado vacío)](../../prototipo/HU-014-p4-sin-puntos.png)
 
 ## Datos de prueba
 
@@ -106,16 +123,18 @@ Esta historia **no** introduce un patrón nuevo; usa los puntos de restauración
 | CA-5 | Elementos «Facturas 2026» y «Clientes»; motivo «Recuperar facturación eliminada por error». |
 | CA-6 | direccion.prueba@prometva.test y gerente.prueba@prometva.test. |
 | CA-7 | Servidor STRUMIS sin puntos vigentes (todos de hace más de 30 días). |
+| CA-8 | STRUMIS con 8.640 puntos vigentes (2.016 en los últimos 7 días); filtro «Solo diarios»; un rango sin puntos (por ejemplo, el mes siguiente). Esperado: página 1 de 101 con 20 puntos; la última página (101) tiene 16. |
+| CA-9 | Motivos de 9 caracteres («Sin datos») y de 301; motivo válido de 10 («Sin datos.») y de 300; 20 y 21 elementos; elementos de 100 y de 101 caracteres. |
 
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-008 (los puntos de restauración se generan al verificar los respaldos).
-- **Estimación:** 5 SP, Sprint 2.
+- **Estimación:** 5 SP, Sprint 4. Va después de HU-008 (Sprint 3), de la que depende, y no tiene iteración en el tablero porque el plan carga solo los Sprints 1 a 3.
 
 **Chequeo de Definition of Ready:**
 
 - [x] Tiene rol, acción y beneficio, idénticos a los del backlog ([documento 01](../01-vision-y-backlog.md)).
-- [x] Tiene 7 criterios Dado/Cuando/Entonces y 4 son casos de error.
+- [x] Tiene 9 criterios Dado/Cuando/Entonces y 5 son casos de error.
 - [x] Tiene estimación (5 SP) y prioridad (Must).
 - [x] Sus dependencias están planificadas en sprints anteriores o en el mismo sprint (documento 02).
 - [x] Indica qué queda fuera y los datos de prueba de cada criterio.

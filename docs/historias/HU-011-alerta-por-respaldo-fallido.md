@@ -4,7 +4,7 @@
 |---|---|
 | **Prioridad (MoSCoW)** | Must |
 | **Estimación** | 5 story points |
-| **Sprint** | 2 |
+| **Sprint** | 3 |
 | **Épica / Feature** | E2 Monitoreo y alertas / F2.2 Alertas y notificaciones |
 | **Depende de** | HU-005 |
 | **Origen en OAS** | Relevamiento (el incidente sufrido por la empresa); Diagnóstico. |
@@ -45,7 +45,7 @@ Como **Responsable de Respaldos** quiero recibir una alerta por correo y en el p
 
 - **Dado** que el servicio de correo no responde
 - **Cuando** se genera la alerta de CA-1
-- **Entonces** la alerta queda igualmente ABIERTA y visible en el panel, con el aviso «No se pudo enviar el correo»
+- **Entonces** la alerta queda igualmente ABIERTA y visible en el panel, con el aviso «No se pudo enviar el correo»; la alerta queda marcada con `correoEnviado` = falso y el motivo del fallo del envío
 
 **CA-4 – Cierre de la alerta** · _camino normal_
 
@@ -77,8 +77,8 @@ Como **Responsable de Respaldos** quiero recibir una alerta por correo y en el p
 **Clases del diseño (documento 06) que toca:**
 
 - `GestorDeAlertas`: `alertarFalla(tarea, ahora)`, `cerrarAlertas(servidor, ahora)` y `alertasAbiertas()`.
-- `Alerta`: constructor, `cerrar(ahora)`, `estado()`, `tipo()`, `servidor()` y `destinatarios()`; enumeraciones `TipoDeAlerta`, `Severidad` y `EstadoAlerta`.
-- `INotificador.notificar(alerta, roles)` y `NotificadorPorCorreo` (puerto y adaptador de correo).
+- `Alerta`: constructor, `cerrar(ahora)`, `estado()`, `tipo()`, `servidor()` y `destinatarios()`; para CA-3, el atributo `correoEnviado` con `marcarCorreoEnviado()`, `marcarCorreoFallido(motivo)` y `correoEnviado()`; enumeraciones `TipoDeAlerta`, `Severidad` y `EstadoAlerta`.
+- `INotificador.notificar(alerta, roles)` y `NotificadorPorCorreo` (puerto y adaptador de correo). Si el envío falla, `notificar` lanza `NotificacionException`; `GestorDeAlertas.alertarFalla` la captura, llama a `Alerta.marcarCorreoFallido(motivo)` y deja la alerta ABIERTA y visible en el panel.
 - `TareaDeRespaldo` (`estado()`, `motivoFallo()`), `PlanificadorDeRespaldos.procesarResultado` y `ServicioDeAuditoria.registrar`.
 
 Esta historia usa el **Singleton**: es el `PlanificadorDeRespaldos` (la única instancia) quien llama a `GestorDeAlertas.alertarFalla` al procesar el resultado de la tarea.
@@ -103,7 +103,7 @@ Esta historia usa el **Singleton**: es el `PlanificadorDeRespaldos` (la única i
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-005 (reintentos: de ahí sale el estado FALLIDA).
-- **Estimación:** 5 SP, Sprint 2.
+- **Estimación:** 5 SP, Sprint 3.
 
 **Chequeo de Definition of Ready:**
 

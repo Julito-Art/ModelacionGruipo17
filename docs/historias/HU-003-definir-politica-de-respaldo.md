@@ -24,7 +24,9 @@ Como **Responsable de Respaldos** quiero definir para cada servidor el intervalo
 
 - **RN-03:** El intervalo es configurable entre 5 y 10 minutos; el valor por defecto es 5 y con más de 5 se avisa que RNF-01 puede no cumplirse.
 - **RN-04:** Esquema de tipos: completo inicial único, incremental en cada intervalo y diferencial diario fuera del horario laboral.
-- **RN-12:** Los puntos de restauración se conservan 30 días (retención por defecto).
+- **RN-12:** Los puntos de restauración se conservan por la retención de la política (por defecto 30 días).
+- **RN-19:** Valores de la política: intervalo entero de 5 a 10 minutos; retención entera de 7 a 90 días; hora del diferencial en formato HH:MM; si algo es inválido no se guarda nada.
+- **RN-20:** Horario laboral de lunes a viernes de 08:00 a 18:00; el diferencial se programa fuera de ese horario (por defecto 23:00).
 - **RN-13:** El cambio de política es una acción relevante y se registra en la auditoría.
 - **RN-16:** Solo el Responsable de Respaldos opera: define las políticas.
 
@@ -66,6 +68,12 @@ Como **Responsable de Respaldos** quiero definir para cada servidor el intervalo
 - **Cuando** el guardado termina
 - **Entonces** se registra en la auditoría la acción CAMBIO_DE_POLITICA con el usuario, la fecha y hora, el servidor y el resultado
 
+**CA-7 – Rechazar valores inválidos de intervalo, retención u hora del diferencial** · _caso de error_
+
+- **Dado** el formulario de STRUMIS con un intervalo vacío o con decimales (5,5), o una retención de 6 o 91 días (también 0, un negativo o 400), o una hora del diferencial de 10:00
+- **Cuando** el Responsable intenta guardar
+- **Entonces** no se guarda nada y junto a cada campo se muestra «Ingresá el intervalo como un número entero de minutos», «La retención debe estar entre 7 y 90 días» o «La hora del diferencial debe estar fuera del horario laboral (08:00 a 18:00)», según el caso; la política anterior no cambia
+
 ## Qué queda fuera de esta historia
 
 - Registrar los servidores (HU-001) y conectar con Acronis Cloud (HU-002).
@@ -77,8 +85,8 @@ Como **Responsable de Respaldos** quiero definir para cada servidor el intervalo
 
 **Clases del diseño (documento 06) que toca:**
 
-- `PoliticaDeRespaldo`: constantes `INTERVALO_MIN`, `INTERVALO_MAX` e `INTERVALO_POR_DEFECTO`; `validar()` y `cumpleObjetivoDePerdida()`.
-- `PlanificadorDeRespaldos.definirPolitica(politica)` (Singleton): guarda la política vigente del servidor.
+- `PoliticaDeRespaldo`: constantes de intervalo, de retención (`RETENCION_MIN_DIAS`, `RETENCION_MAX_DIAS`) y de horario laboral; el constructor completo `PoliticaDeRespaldo(servidor, intervaloMinutos, retencionDias, horaDiferencial)` carga los valores del formulario; `validar()`, `errores()` (los mensajes de CA-3 y CA-7), `esHoraLaboral(hora)` y `cumpleObjetivoDePerdida()`.
+- `PlanificadorDeRespaldos.definirPolitica(politica, usuario, ahora)` (Singleton): comprueba el rol del usuario (CA-5), guarda la política vigente del servidor y audita el cambio con ese usuario (CA-6). `estaProtegido(servidor)` da la etiqueta «Sin protección» (CA-1, CA-2): se calcula, no se guarda.
 - `ServicioDeAuditoria.registrar(...)` con `AccionAuditada.CAMBIO_DE_POLITICA`.
 - `Usuario.tieneRol(rol)` para el control de CA-5 y `ServidorOrigen` (`STRUMIS`, `TANGO`).
 
@@ -97,6 +105,7 @@ Esta historia usa el **Singleton**: `definirPolitica` se invoca siempre sobre la
 | CA-2 | Intervalo 5; retención 30; hora del diferencial 23:00 (ejemplo de horario fuera de jornada; la hora real se define con la empresa). |
 | CA-3 | Intervalos inválidos 11 y 4; intervalos límite válidos 5 y 10; política previa de STRUMIS con intervalo 5 (debe quedar intacta). |
 | CA-4 | Intervalo 10; retención 30. |
+| CA-7 | Intervalo «» y 5,5; retención 6, 7, 90, 91, 0, -1 y 400; hora 07:59 y 18:00 (válidas) y 08:00, 10:00 y 17:59 (inválidas). Política previa con intervalo 5, retención 30 y hora 23:00 (debe quedar intacta). |
 | CA-5 | gerente.prueba@prometva.test (Gerente de Administración) y direccion.prueba@prometva.test (Dirección). |
 | CA-6 | Guardado de CA-2. Registro esperado: usuario resp.prueba@prometva.test, acción CAMBIO_DE_POLITICA, objetivo STRUMIS, resultado «exitoso». |
 
@@ -108,7 +117,7 @@ Esta historia usa el **Singleton**: `definirPolitica` se invoca siempre sobre la
 **Chequeo de Definition of Ready:**
 
 - [x] Tiene rol, acción y beneficio, idénticos a los del backlog ([documento 01](../01-vision-y-backlog.md)).
-- [x] Tiene 6 criterios Dado/Cuando/Entonces y 2 son casos de error.
+- [x] Tiene 7 criterios Dado/Cuando/Entonces y 3 son casos de error.
 - [x] Tiene estimación (5 SP) y prioridad (Must).
 - [x] Sus dependencias están planificadas en sprints anteriores o en el mismo sprint (documento 02).
 - [x] Indica qué queda fuera y los datos de prueba de cada criterio.

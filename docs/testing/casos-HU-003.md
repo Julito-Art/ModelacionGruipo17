@@ -21,6 +21,9 @@
 | CP-003-09 | CA-5 | Integración | negativo | Sesiones de Gerente de Administración y de Dirección. | Con cada usuario, llamar a `definirPolitica`. | gerente.prueba@prometva.test y direccion.prueba@prometva.test. | Ambas llamadas se rechazan con «No tenés permiso para definir políticas» y la política no cambia. | — |
 | CP-003-10 | CA-6 | Integración | normal | Guardado exitoso de CP-003-03. | Consultar el registro de auditoría. | — | Existe un registro con usuario resp.prueba@prometva.test, acción CAMBIO_DE_POLITICA, objetivo STRUMIS y resultado «exitoso». | RNF-06 |
 | CP-003-11 | CA-2 | Aceptación | normal | Al menos 5 usuarios de prueba sin conocimientos técnicos avanzados (recomendado: 10). | Pedir a cada uno que defina una política de respaldo sin ayuda, cronometrando. | Servidor STRUMIS; valores por defecto. | Al menos el 90 % de los usuarios la define en 3 minutos o menos (con 5 usuarios, los 5). | RNF-07 |
+| CP-003-12 | CA-7 | Unitario | límite | Ninguna. | Llamar a `errores()` con retención 6, 7, 90 y 91 (y 0, -1 y 400). | Retenciones 6, 7, 90, 91, 0, -1 y 400. | 7 y 90 sin error; 6, 91, 0, -1 y 400 con «La retención debe estar entre 7 y 90 días». | — |
+| CP-003-13 | CA-7 | Unitario | límite | Ninguna. | Llamar a `PoliticaDeRespaldo.esHoraLaboral` y a `errores()` con 07:59, 08:00, 17:59 y 18:00. | Horas 07:59, 08:00, 17:59 y 18:00. | 07:59 y 18:00 sin error; 08:00 y 17:59 con «La hora del diferencial debe estar fuera del horario laboral (08:00 a 18:00)». | — |
+| CP-003-14 | CA-7 | E2E | negativo | Sesión de Responsable; política previa de STRUMIS (5, 30, 23:00). | Dejar el intervalo vacío y guardar; repetir con 5,5, con retención 400 y con hora 10:00. | Intervalo «» y 5,5; retención 400; hora 10:00. | Cada caso muestra su mensaje junto al campo («Ingresá el intervalo como un número entero de minutos», «La retención debe estar entre 7 y 90 días», «La hora del diferencial debe estar fuera del horario laboral (08:00 a 18:00)») y la política previa no cambia. | — |
 
 ## Matriz de trazabilidad criterio ↔ caso de prueba
 
@@ -32,10 +35,11 @@
 | CA-4 | CP-003-07, CP-003-08 |
 | CA-5 | CP-003-09 |
 | CA-6 | CP-003-10 |
+| CA-7 | CP-003-12, CP-003-13, CP-003-14 |
 
 ## Cobertura
 
-- Criterios de aceptación: 6; criterios con al menos un caso: 6.
-- Casos negativos (error o dato inválido): CP-003-04, CP-003-06, CP-003-09.
-- Casos de valor límite: CP-003-05.
+- Criterios de aceptación: 7; criterios con al menos un caso: 7.
+- Casos negativos (error o dato inválido): CP-003-04, CP-003-06, CP-003-09, CP-003-14.
+- Casos de valor límite: CP-003-05, CP-003-12, CP-003-13.
 - Casos ligados a un RNF: CP-003-10 (RNF-06), CP-003-11 (RNF-07).

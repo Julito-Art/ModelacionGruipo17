@@ -21,6 +21,12 @@
 | CP-014-09 | CA-6 | Integración | negativo | Sesiones de Dirección y de Gerente de Administración. | Intentar `solicitar` con cada usuario. | direccion.prueba@prometva.test y gerente.prueba@prometva.test. | Ambas se rechazan con «No tenés permiso para solicitar restauraciones» y no se crea nada. | — |
 | CP-014-10 | CA-7 | Integración | negativo | STRUMIS sin puntos vigentes. | Abrir «Nueva solicitud» y elegir STRUMIS. | Puntos de más de 30 días. | Se muestra «No hay puntos de restauración vigentes para este servidor» y no se puede enviar. | — |
 | CP-014-11 | CA-1 | E2E | normal | Sesión de Responsable; TANGO con PR-A y PR-B. | Abrir la solicitud, elegir PR-A, TOTAL, escribir el motivo y enviar. | Datos de CA-2. | Se recorren las pantallas 1 y 3 y la solicitud queda PENDIENTE. | — |
+| CP-014-12 | CA-8 | Unitario | normal | STRUMIS con 2.016 puntos en los últimos 7 días. | Llamar a `puntosVigentes` y `contarPuntosVigentes` con la página 1. | Rango de 7 días; página 1. | 20 puntos, del más reciente al más antiguo, y 101 páginas en total. | — |
+| CP-014-13 | CA-8 | Unitario | límite | Mismos datos que CP-014-12. | Pedir las páginas 101 y 102. | Páginas 101 y 102. | La 101 trae 16 puntos; la 102 viene vacía. | — |
+| CP-014-14 | CA-8 | Integración | normal | STRUMIS con incrementales, 1 diferencial por día y el completo inicial. | Llamar a `puntosVigentes` con `soloDiarios` verdadero y con un rango sin puntos. | `soloDiarios` = verdadero; rango del mes siguiente. | Solo vuelven diferenciales y el completo; el rango vacío muestra «No hay puntos de restauración en el rango elegido». | — |
+| CP-014-15 | CA-9 | Unitario | límite | Ninguna. | Llamar a `SolicitudDeRestauracion.validar` con motivos de 9, 10, 300 y 301 caracteres. | «Sin datos» (9), «Sin datos.» (10), 300 y 301 caracteres. | 10 y 300 sin error; 9 y 301 con «El motivo debe tener entre 10 y 300 caracteres». | — |
+| CP-014-16 | CA-9 | Unitario | límite | Tipo GRANULAR. | Llamar a `validar` con 20 y 21 elementos, y con elementos de 100 y de 101 caracteres. | 20 y 21 elementos; 100 y 101 caracteres. | 20 elementos y 100 caracteres sin error; 21 con «Se pueden indicar hasta 20 elementos» y 101 con «Cada elemento puede tener hasta 100 caracteres». | — |
+| CP-014-17 | CA-7 | E2E | negativo | Sesión de Responsable; STRUMIS sin puntos vigentes. | Abrir la solicitud y elegir STRUMIS. | Puntos de más de 30 días. | Se muestra la pantalla 4 con «No hay puntos de restauración vigentes para este servidor» y el botón de envío deshabilitado. | — |
 
 ## Matriz de trazabilidad criterio ↔ caso de prueba
 
@@ -32,11 +38,13 @@
 | CA-4 | CP-014-06, CP-014-07 |
 | CA-5 | CP-014-08 |
 | CA-6 | CP-014-09 |
-| CA-7 | CP-014-10 |
+| CA-7 | CP-014-10, CP-014-17 |
+| CA-8 | CP-014-12, CP-014-13, CP-014-14 |
+| CA-9 | CP-014-15, CP-014-16 |
 
 ## Cobertura
 
-- Criterios de aceptación: 7; criterios con al menos un caso: 7.
-- Casos negativos (error o dato inválido): CP-014-05, CP-014-06, CP-014-09, CP-014-10.
-- Casos de valor límite: CP-014-02, CP-014-07.
+- Criterios de aceptación: 9; criterios con al menos un caso: 9.
+- Casos negativos (error o dato inválido): CP-014-05, CP-014-06, CP-014-09, CP-014-10, CP-014-17.
+- Casos de valor límite: CP-014-02, CP-014-07, CP-014-13, CP-014-15, CP-014-16.
 - Casos ligados a un RNF: CP-014-04 (RNF-06).

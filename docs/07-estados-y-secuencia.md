@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 7 de la consigna (Parcial 2) |
-| **Estado** | Borrador v1 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Base** | [06 – Diseño de clases](06-diseno-de-clases.md) y [00 – Documento maestro](00-documento-maestro.md) (estados y reglas) |
 | **Fuentes de los diagramas** | [`07-estados-tarea.puml`](../diagramas/07-estados-tarea.puml), [`07-estados-solicitud.puml`](../diagramas/07-estados-solicitud.puml), [`07-secuencia-hu004.puml`](../diagramas/07-secuencia-hu004.puml) y [`07-secuencia-hu004-error.puml`](../diagramas/07-secuencia-hu004-error.puml) |
 
@@ -119,8 +119,8 @@ Se modela **HU-004 – Ejecutar respaldos automáticos según la política** por
 **Lectura del diagrama.**
 
 1. El primer intento falla por un error del respaldo: `registrarFallo` deja la tarea en `EN_REINTENTO`.
-2. Mientras la tarea esté `EN_REINTENTO`, el reloj invoca `reintentar` una vez por minuto; si el reintento tiene éxito, recorre la verificación y llega a `COMPLETADA` **sin generar alerta** (HU-005).
-3. Si los 3 reintentos fallan, la tarea queda `FALLIDA`: `GestorDeAlertas.alertarFalla` crea una `Alerta` (tipo `FALLA`, severidad `CRITICA`), `Alerta.destinatarios` indica `RESPONSABLE_DE_RESPALDOS` y `DIRECCION`, y `NotificadorPorCorreo` la envía (HU-011 y HU-013). Se auditan `ALERTA_GENERADA` y `RESPALDO_FINALIZADO`.
+2. Mientras la tarea esté `EN_REINTENTO`, el reloj invoca `reintentar` una vez por minuto; cada reintento vuelve a llamar a `iniciar` (EN_REINTENTO → EN_EJECUCION) y a ejecutar la estrategia y el adaptador; si tiene éxito, `marcarVerificando` lleva la tarea a VERIFICANDO, recorre la verificación y llega a `COMPLETADA` **sin generar alerta** (HU-005).
+3. Si los 3 reintentos fallan, la tarea queda `FALLIDA`: `GestorDeAlertas.alertarFalla` crea una `Alerta` (tipo `FALLA`, severidad `CRITICA`), `Alerta.destinatarios` indica `RESPONSABLE_DE_RESPALDOS` y `DIRECCION`, y `NotificadorPorCorreo` la envía (HU-011 y HU-013). Se auditan `ALERTA_GENERADA` y `RESPALDO_FINALIZADO`. Todas las acciones automáticas se registran con el usuario de sistema `Usuario.SGR` (RN-13); en la tarea programada, `usuario` = nulo solo indica que no la lanzó una persona.
 
 **Mensajes y métodos usados:**
 

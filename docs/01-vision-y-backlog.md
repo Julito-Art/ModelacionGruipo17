@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 1 de la consigna (Parcial 3) |
-| **Estado** | Borrador v2 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Sistema** | Sistema de Gestión de Respaldos de Prometva (**SGR**) |
 | **Documento base** | [00 – Documento maestro](00-documento-maestro.md) (nombres, reglas y glosario vinculantes) |
 | **Fuente del diagrama** | [`01-jerarquia.puml`](../diagramas/01-jerarquia.puml) |
@@ -26,7 +26,7 @@ Para la Dirección y el personal de Prometva (pyme de ingeniería, fabricación 
 
 ## 3. Épicas, features y trazabilidad con OAS
 
-> La trazabilidad usa las secciones del trabajo de campo de OAS. Verificar contra la guía *Mapeo OAS → Scrum* de la cátedra antes de entregar.
+> La trazabilidad usa las secciones del trabajo de campo de OAS (Mandato, Relevamiento, Estudio Preliminar, Diagnóstico, Solución Elegida, Resultado esperado), según la guía *Mapeo OAS → Scrum* de la cátedra.
 
 | Épica | Objetivo | Features | Sale de (trabajo de OAS) |
 |---|---|---|---|

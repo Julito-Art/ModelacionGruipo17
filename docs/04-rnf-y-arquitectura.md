@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 4 de la consigna (Parcial 2) |
-| **Estado** | Borrador v2 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Base** | [00 – Documento maestro](00-documento-maestro.md), [03 – Contexto y casos de uso](03-contexto-y-casos-de-uso.md) |
 | **Fuentes de los diagramas** | [`04-componentes.puml`](../diagramas/04-componentes.puml) y [`04-despliegue.puml`](../diagramas/04-despliegue.puml) |
 | **Decisiones registradas** | [ADR-001](adr/ADR-001-proveedor-de-respaldo-acronis.md), [ADR-002](adr/ADR-002-estilo-monolito-modular.md), [ADR-003](adr/ADR-003-servidor-dedicado-para-el-sgr.md) |
@@ -99,7 +99,7 @@ Con 30 personas en la empresa, 3 roles de usuario y 2 servidores a respaldar, la
 | RNF-04 | Respaldo ejecutado por el agente y no por el SGR; incrementales frecuentes (pocos datos), diferenciales y completo inicial fuera del horario laboral; SGR separado de producción. | ADR-001, ADR-003 |
 | RNF-05 | Restauración ejecutada por Acronis; simulacros periódicos que miden el tiempo; enlace de al menos 100 Mbps de bajada. | ADR-001 |
 | RNF-06 | Servicio de Auditoría transversal (HU-023) y registros inmutables, con índices por fecha, usuario y acción. | ADR-002 |
-| RNF-07 | Interfaz web simple, con valores por defecto (intervalo de 10 minutos) y mensajes claros. | ADR-001, ADR-002 |
+| RNF-07 | Interfaz web simple, con valores por defecto (intervalo de 5 minutos) y mensajes claros. | ADR-001, ADR-002 |
 | RNF-08 | El respaldo lo hace el agente de Acronis sobre las bases SQL sin modificarlas; se comprueba con simulacros. | ADR-001 |
 
 ## 6. Riesgos y límites de esta arquitectura

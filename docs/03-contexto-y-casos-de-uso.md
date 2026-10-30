@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 3 de la consigna (Parcial 2) |
-| **Estado** | Borrador v2 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Base** | [00 – Documento maestro](00-documento-maestro.md) (actores, reglas y nombres) y [01 – Backlog](01-vision-y-backlog.md) (historias de usuario) |
 | **Fuentes de los diagramas** | [`03-contexto.puml`](../diagramas/03-contexto.puml) y [`03-casos-de-uso.puml`](../diagramas/03-casos-de-uso.puml) |
 

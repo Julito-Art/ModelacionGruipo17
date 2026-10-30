@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 6 de la consigna (Parcial 2) |
-| **Estado** | Borrador v1 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Base** | [00 – Documento maestro](00-documento-maestro.md) (nombres canónicos y reglas), [03 – Casos de uso](03-contexto-y-casos-de-uso.md) y [04 – Arquitectura](04-rnf-y-arquitectura.md) (componentes) |
 | **Fuentes de los diagramas** | Un `.puml` por vista en [`diagramas/`](../diagramas/) (`06-clases-*.puml` y `06-enumeraciones.puml`) |
 
@@ -11,7 +11,7 @@
 
 ## 1. Cómo se lee el diseño
 
-El diagrama de clases de diseño del SGR tiene **24 clases e interfaces y 11 enumeraciones**. Para que se pueda leer, se presenta en **una vista general** (solo nombres, con todas las asociaciones y sus multiplicidades) y **cuatro vistas de detalle** con atributos tipados y métodos con firma completa. Las seis imágenes son vistas de un mismo modelo y se generaron desde una sola definición, por lo que no se contradicen.
+El diagrama de clases de diseño del SGR tiene **25 clases e interfaces y 11 enumeraciones**. Para que se pueda leer, se presenta en **una vista general** (solo nombres, con todas las asociaciones y sus multiplicidades) y **cuatro vistas de detalle** con atributos tipados y métodos con firma completa. Las seis imágenes son vistas de un mismo modelo y se generaron desde una sola definición, por lo que no se contradicen.
 
 Convenciones: `[0..1]` indica un atributo o resultado opcional; los colores marcan los patrones (naranja: Singleton y Multiton; verde: Strategy; azul: Adapter; gris: sistema externo); los *getters* triviales que no se usan en los diagramas de estados y de secuencia se omiten; las asociaciones hacia enumeraciones no se dibujan (son atributos tipados). Los servicios de aplicación del documento 04 (*Servicio de Alertas*, *de Auditoría*, *de Restauración*) son las clases `GestorDeAlertas`, `ServicioDeAuditoria` y `ServicioDeRestauracion`.
 
@@ -81,6 +81,7 @@ Fuente: [`06-enumeraciones.puml`](../diagramas/06-enumeraciones.puml)
 | `AcronisCloudAdapter` | Clase · **Adapter** | Traduce el contrato del dominio a la API de Acronis. | Adaptador Acronis | HU-002, 004, 008, 016 | CU-02, 04, 05, 14 |
 | `ApiAcronis` | Clase externa · Adaptee | API de Acronis (operaciones supuestas). | Acronis Cloud (externo) | HU-002, 004 | CU-02, 04 |
 | `SinConexionException` | Excepción | Falta de conexión a Internet (RN-17). | Puerto IProveedorNube | HU-007 | CU-07 |
+| `NotificacionException` | Excepción | Falla del envío de una notificación (por ejemplo, el correo); la alerta no se pierde (CA-3 de HU-011). | Puerto INotificador | HU-011, 013 | CU-10, 11 |
 | `GestorDeAlertas` | Clase de servicio | Genera, eleva y cierra alertas y las notifica. | Servicio de Alertas | HU-011, 012, 013 | CU-10, 11 |
 | `Alerta` | Clase | Aviso con tipo, severidad y estado; sabe a qué roles se notifica. | Servicio de Alertas | HU-011, 012, 013 | CU-10, 11 |
 | `INotificador` | Interfaz · puerto | Contrato para enviar notificaciones. | Puerto INotificador | HU-011, 013 | CU-10, 11 |
@@ -96,7 +97,7 @@ Fuente: [`06-enumeraciones.puml`](../diagramas/06-enumeraciones.puml)
 
 ## 3. Patrones de diseño
 
-Se aplican **cuatro patrones**, de **tres categorías** distintas: Singleton y Multiton (creacionales), Adapter (estructural) y Strategy (de comportamiento). Singleton y Multiton son los patrones que le tocaron al grupo en el trabajo de la cursada (la presentación está en `docs/patrones-gof/`); el Multiton es una variante del Singleton y no figura entre los 23 patrones GoF, pero la cátedra lo asignó, por lo que se usa y se complementa con Adapter y Strategy.
+Se aplican **cuatro patrones**, de **tres categorías** distintas: Singleton y Multiton (creacionales), Adapter (estructural) y Strategy (de comportamiento). Singleton y Multiton son los patrones que le tocaron al grupo en el trabajo de la cursada (la presentación está en [`docs/Patrones Creacionales_ Singleton y Multiton (Modelacion) (2).pdf`](<Patrones Creacionales_ Singleton y Multiton (Modelacion) (2).pdf>)); el Multiton es una variante del Singleton y no figura entre los 23 patrones GoF, pero la cátedra lo asignó, por lo que se usa y se complementa con Adapter y Strategy.
 
 ### 3.1 Singleton – `PlanificadorDeRespaldos` *(creacional)*
 
@@ -186,10 +187,15 @@ Se aplican **cuatro patrones**, de **tres categorías** distintas: Singleton y M
 | RN-10 | `SolicitudDeRestauracion.autorizar` (rol `DIRECCION`, distinto del solicitante) |
 | RN-11 | `ServicioDeRestauracion.ejecutar` → `PlanificadorDeRespaldos.lanzarRespaldoPrevioARestauracion` (`TipoDeDisparo.PREVIO_A_RESTAURACION`) |
 | RN-12 | `PoliticaDeRespaldo.retencionDias`; `PuntoDeRestauracion` (`vigenteHasta`, `estaVigente`) |
-| RN-13 | `ServicioDeAuditoria.registrar`; `RegistroDeAuditoria`; `AccionAuditada` |
+| RN-13 | `ServicioDeAuditoria.registrar`; `RegistroDeAuditoria`; `AccionAuditada`; `Usuario.SGR` (usuario de las acciones automáticas) |
 | RN-14 | `ServicioDeRestauracion.simulacro` |
 | RN-17 | `SinConexionException`; `TareaDeRespaldo.marcarEnCola`; `PlanificadorDeRespaldos.reanudarEnCola` |
 | RN-18 | `Usuario` (`MAX_INTENTOS`, `BLOQUEO_MINUTOS`, `LONGITUD_MIN_CONTRASENA`, `autenticar`, `estaBloqueado`) |
+| RN-19 | `PoliticaDeRespaldo` (constructor completo, `validar`, `errores`, constantes de intervalo y de retención); `PlanificadorDeRespaldos` (`definirPolitica`, `estaProtegido`) |
+| RN-20 | `PoliticaDeRespaldo` (`INICIO_HORARIO_LABORAL`, `FIN_HORARIO_LABORAL`, `esHoraLaboral`) |
+| RN-21 | `SolicitudDeRestauracion` (`validar`, `MOTIVO_MIN`, `MOTIVO_MAX`, `ELEMENTOS_MAX`, `ELEMENTO_LARGO_MAX`) |
+| RN-22 | `ServicioDeRestauracion` (`puntosVigentes`, `contarPuntosVigentes`, `TAMANO_PAGINA`, `DIAS_RANGO_POR_DEFECTO`) |
+| RN-23 | `AcronisCloudAdapter` (`TIEMPO_ESPERA_LLAMADA_SEG`, `TIEMPO_ESPERA_VALIDACION_SEG`) |
 
 ## 5. Trazabilidad historias de usuario ↔ clases
 
@@ -199,7 +205,7 @@ Toda historia tiene clases que la implementan y toda clase del catálogo aparece
 |---|---|
 | HU-001 | `AgenteDeRespaldo.obtenerInstancia` y `existeInstancia` (un agente por `ServidorOrigen`); `ServicioDeAuditoria.registrar` (`REGISTRO_DE_SERVIDOR`) |
 | HU-002 | `IProveedorNube.configurar` y `probarConexion`; `AcronisCloudAdapter`; `ApiAcronis.autenticar` |
-| HU-003 | `PoliticaDeRespaldo` (`validar`, `cumpleObjetivoDePerdida`); `PlanificadorDeRespaldos.definirPolitica` |
+| HU-003 | `PoliticaDeRespaldo` (constructor completo, `validar`, `errores`, `esHoraLaboral`, `cumpleObjetivoDePerdida`); `PlanificadorDeRespaldos` (`definirPolitica(politica, usuario, ahora)`, `obtenerPolitica`, `estaProtegido`); `Usuario.tieneRol` |
 | HU-004 | `PlanificadorDeRespaldos` (`ejecutarCiclo`, `lanzar`, `procesarResultado`); `AgenteDeRespaldo` (`ejecutarRespaldo`, `hayRespaldoEnCurso`); `PoliticaDeRespaldo.tipoParaCiclo`; `IEstrategiaDeRespaldo` y sus tres implementaciones; `AcronisCloudAdapter`; `TareaDeRespaldo`; `PuntoDeRestauracion` |
 | HU-005 | `TareaDeRespaldo` (`registrarFallo`, `puedeReintentar`, `MAX_REINTENTOS`); `PlanificadorDeRespaldos.reintentar` |
 | HU-006 | `PlanificadorDeRespaldos.lanzarRespaldoManual`; `TipoDeDisparo.MANUAL`; `ServicioDeAuditoria.registrar` |
@@ -207,10 +213,10 @@ Toda historia tiene clases que la implementan y toda clase del catálogo aparece
 | HU-008 | `IProveedorNube.validarRespaldo`; `TareaDeRespaldo` (`marcarVerificando`, `completar`); `PuntoDeRestauracion` |
 | HU-009 | `AgenteDeRespaldo.ultimoExitoso`; `PoliticaDeRespaldo.proximaEjecucion`; `TareaDeRespaldo.estado`; `GestorDeAlertas.alertasAbiertas` |
 | HU-010 | `TareaDeRespaldo` (servidor, estado y fechas, consultados con filtros) |
-| HU-011 | `GestorDeAlertas.alertarFalla`; `Alerta`; `INotificador` y `NotificadorPorCorreo` |
+| HU-011 | `GestorDeAlertas.alertarFalla`; `Alerta` (`correoEnviado`, `marcarCorreoFallido`); `INotificador` y `NotificadorPorCorreo`; `NotificacionException` |
 | HU-012 | `PlanificadorDeRespaldos.detectarAtrasos`; `GestorDeAlertas.evaluarAtraso`; `Alerta` (`elevarSeveridad`, `cerrar`) |
-| HU-013 | `Alerta.destinatarios`; `INotificador.notificar` |
-| HU-014 | `ServicioDeRestauracion.solicitar`; `SolicitudDeRestauracion`; `PuntoDeRestauracion.estaVigente` |
+| HU-013 | `Alerta.destinatarios`; `INotificador.notificar`; `NotificacionException` |
+| HU-014 | `ServicioDeRestauracion` (`solicitar`, `puntosVigentes`, `contarPuntosVigentes`); `SolicitudDeRestauracion` (`validar`); `PuntoDeRestauracion.estaVigente`; `Usuario.tieneRol` |
 | HU-015 | `ServicioDeRestauracion` (`autorizar`, `rechazar`); `SolicitudDeRestauracion` (`autorizar`, `rechazar`); `Usuario.tieneRol` |
 | HU-016 | `ServicioDeRestauracion.ejecutar`; `PlanificadorDeRespaldos.lanzarRespaldoPrevioARestauracion`; `AgenteDeRespaldo.restaurar`; `IProveedorNube.restaurar`; `SolicitudDeRestauracion` (`iniciarEjecucion`, `completar`, `fallar`) |
 | HU-017 | `ServicioDeRestauracion.simulacro`; `IProveedorNube.restaurar` |

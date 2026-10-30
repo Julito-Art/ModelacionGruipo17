@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 10 de la consigna (Parcial 3) |
-| **Estado** | Borrador v1 – 26/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Base** | Historias de [`docs/historias/`](historias/) y [06 – Diseño de clases](06-diseno-de-clases.md) |
 | **Capturas** | Carpeta [`prototipo/`](../prototipo/) (imágenes `.png`) |
 | **Fuentes del prototipo** | [`prototipo/fuentes/`](../prototipo/fuentes/) (archivos `.puml` de PlantUML Salt) |
@@ -18,7 +18,7 @@ Se prototiparon **las pantallas de las 4 historias del punto 8**: HU-003, HU-004
 
 ## 2. Reglas usadas y escala de severidad
 
-**Importante:** la lista de las 21 reglas (Shneiderman, Nielsen y Pierotti) es material de la cátedra que este documento no tuvo a la vista. Se usaron las **heurísticas de Nielsen** por su nombre, que forman parte de esa lista. El grupo debe **verificar cada regla contra la numeración de la cátedra** y, si hace falta, cambiarle el nombre o el número sin alterar el análisis.
+Se usaron las **heurísticas de Nielsen**, que forman parte de las 21 reglas de la cátedra (Shneiderman, Nielsen y Pierotti). Cada regla se cita por su nombre y por su código N1 a N10 de Nielsen.
 
 | Código | Regla (fuente) |
 |---|---|
@@ -172,6 +172,10 @@ Las severidades con flecha indican el valor **antes → después** de la correcc
 
 ![Pantalla 3 – Solicitud enviada (PENDIENTE)](../prototipo/HU-014-p3-confirmacion.png)
 
+**Pantalla 4 – Servidor sin puntos vigentes (estado vacío, CA-7)**
+
+![Pantalla 4 – Servidor sin puntos vigentes](../prototipo/HU-014-p4-sin-puntos.png)
+
 ### Evaluación heurística
 
 | Regla | Pantalla | ¿Cumple? | Evidencia (marca señalada en la captura) | Severidad |
@@ -202,4 +206,4 @@ Las severidades con flecha indican el valor **antes → después** de la correcc
 | HU-003 | 2 | 4 | 2 | 1 |
 | HU-004 | 2 | 4 | 2 | 1 |
 | HU-011 | 3 | 4 | 2 | 0 |
-| HU-014 | 3 | 4 | 1 | 1 |
+| HU-014 | 4 | 4 | 1 | 1 |

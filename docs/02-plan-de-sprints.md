@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 2 de la consigna (Parcial 3) |
-| **Estado** | Borrador v3 – 28/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Backlog de origen** | [01 – Visión y backlog](01-vision-y-backlog.md) |
 
 ## 1. Duración y capacidad
@@ -12,7 +12,7 @@
 - **Equipo supuesto:** 4 integrantes con **dedicación completa** durante toda la semana (incluido el fin de semana del 24 y 25/10).
 - **Capacidad supuesta:** **10 story points por día** de equipo = 4 personas × 2,5 SP por persona y día. Con esa velocidad, la capacidad es de 30 SP en el Sprint 1 (3 días) y de 20 SP en cada uno de los Sprints 2 y 3 (2 días).
 - **Criterio:** 1 SP equivale a unas 3 horas de trabajo efectivo de una persona. Esta calibración reemplaza a la de la versión anterior (dedicación parcial, 5 SP por persona cada 2 semanas), que con una sola semana habría dado apenas unos 10 SP en total. Como no hay historial de velocidad, el valor es una **suposición a recalibrar** al cierre del Sprint 1. Ningún sprint se carga al 100 % para dejar margen a reuniones y retrabajo.
-- **Alcance:** este plan cubre solo los Sprints 1 a 3 del plan original (22 HU originales → 11 HU, 53 SP). Las 11 HU restantes (42 SP) quedan en el backlog sin sprint asignado (ver sección 6).
+- **Alcance:** este plan cubre solo los Sprints 1 a 3 del plan original (11 de las 23 HU del backlog, 53 SP). Las 11 HU restantes (42 SP) quedan en el backlog sin sprint asignado (ver sección 6).
 - **Regla de planificación:** ningún sprint supera la capacidad; las dependencias se respetan (una HU nunca va antes de lo que necesita).
 
 ## 2. Escala de estimación
@@ -94,7 +94,7 @@ Dentro de un mismo sprint, el orden de la tabla del punto 4 es el orden de traba
 - **Cierre del Sprint 2:** respaldo automático en Acronis Cloud con reintentos y respaldo manual.
 - **Cierre del Sprint 3:** el núcleo de protección funciona: respaldo automático (HU-004), reintentos (HU-005), verificación de integridad (HU-008), cola ante cortes de Internet (HU-007) y alertas de falla y atraso (HU-011, HU-012).
 
-**Backlog pendiente (sin sprint asignado, 42 SP):** HU-009, HU-014, HU-015, HU-013, HU-010, HU-016, HU-017, HU-020, HU-019, HU-021 y HU-022. Entre ellas hay HU de prioridad **Must** (HU-009, HU-014, HU-015 y HU-016: panel, solicitud y autorización de restauraciones, y restauración), por lo que con este plan **no quedan entregadas todas las HU Must**; la restauración de datos queda fuera del alcance de estos 3 sprints.
+**Backlog pendiente (fuera de los 3 sprints planificados, 42 SP; sin iteración en el tablero):** HU-009, HU-014, HU-015, HU-013, HU-010, HU-016, HU-017, HU-020, HU-019, HU-021 y HU-022. Conservan el sprint tentativo del backlog ([01](01-vision-y-backlog.md)): por ejemplo, HU-014 va en el Sprint 4, después de HU-008 (Sprint 3), de la que depende, y HU-013 en el Sprint 4, después de HU-011 y HU-012 (Sprint 3). Entre ellas hay HU de prioridad **Must** (HU-009, HU-014, HU-015 y HU-016: panel, solicitud y autorización de restauraciones, y restauración), por lo que con este plan **no quedan entregadas todas las HU Must**; la restauración de datos queda fuera del alcance de estos 3 sprints.
 
 ## 7. Carga en el tablero de GitHub (Sprint, Puntos y Prioridad)
 
@@ -116,7 +116,7 @@ Las tres iteraciones del campo **Sprint**:
 
 Las iteraciones son consecutivas, sin receso entre ellas. Las HU del backlog pendiente (sección 6) se cargan con el campo Sprint vacío.
 
-Las épicas, features e historias se cargan como issues con las etiquetas `épica`, `feature` e `historia`, enlazadas como sub-issues (feature dentro de épica, historia dentro de feature). La creación de etiquetas e issues se puede automatizar con el script que acompaña este trabajo; el detalle está en `_interno/guia-github.md`. Los valores de Sprint, Puntos y Prioridad de cada HU son los de las secciones 3 y 4 de este documento y los del backlog.
+Las épicas, features e historias se cargan como issues con las etiquetas `épica`, `feature` e `historia`, enlazadas como sub-issues (feature dentro de épica, historia dentro de feature). Los valores de Sprint, Puntos y Prioridad de cada HU son los de las secciones 3 y 4 de este documento y los del backlog.
 
 ## 8. Riesgos y supuestos del plan
 

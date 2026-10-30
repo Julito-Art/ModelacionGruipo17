@@ -4,7 +4,7 @@
 |---|---|
 | **Sistema** | Sistema de Gestión de Respaldos de Prometva (**SGR**) |
 | **Caso** | Trabajo de campo de OAS sobre **Prometva** (pyme de ingeniería, fabricación y montaje de estructuras metálicas, 30 personas). El trabajo de OAS fue realizado por otro equipo (Alvarez, Altamirano y Carrizo); este grupo de Modelación (Grupo N° 17: Alvarez Garcia, Flores, Ruiz y Valor) toma ese caso. |
-| **Estado** | Borrador v2 – 24/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Naturaleza** | Fuente única de nombres, reglas y supuestos. Los documentos 01 a 10 **deben** usar los nombres de este archivo. |
 
 **Convenciones:** los supuestos de modelado llevan el identificador `SM-xx` y la marca **[A VALIDAR]**: son decisiones del grupo que no figuran en el trabajo de campo y deberían confirmarse con la empresa o con el docente.
@@ -153,13 +153,18 @@ Se desarrollan con escenario completo en [04 – RNF y arquitectura](04-rnf-y-ar
 | RN-09 | **Destinatarios.** Las alertas ADVERTENCIA van al Responsable de Respaldos; las CRITICA, al Responsable y a Dirección. |
 | RN-10 | **Restauración controlada.** Toda restauración exige solicitud del Responsable y autorización de Dirección; nadie autoriza su propia solicitud. |
 | RN-11 | **Red de seguridad.** Antes de restaurar sobre producción, el SGR ejecuta un respaldo previo a restauración del estado actual del servidor (disparador PREVIO_A_RESTAURACION). |
-| RN-12 | **Retención.** Los puntos de restauración se conservan 30 días (**SM-06**). |
-| RN-13 | **Auditoría.** Toda acción relevante se registra de forma inmutable y se conserva 12 meses (**SM-09**). Acciones relevantes: inicio de sesión (éxito o fallo); alta, baja y cambio de rol de usuarios; registro de servidores; cambio de la conexión con Acronis; cambio de política; respaldos (inicio y resultado, automáticos o manuales); ciclos omitidos por RN-05; alertas generadas; solicitud, autorización, rechazo y ejecución de restauraciones; simulacros; generación de informes. |
+| RN-12 | **Retención.** Los puntos de restauración se conservan por la retención de la política del servidor: entre 7 y 90 días, por defecto 30 (**SM-06**, RN-19). |
+| RN-13 | **Auditoría.** Toda acción relevante se registra de forma inmutable y se conserva 12 meses (**SM-09**). Acciones relevantes: inicio de sesión (éxito o fallo); alta, baja y cambio de rol de usuarios; registro de servidores; cambio de la conexión con Acronis; cambio de política; respaldos (inicio y resultado, automáticos o manuales); ciclos omitidos por RN-05; alertas generadas; solicitud, autorización, rechazo y ejecución de restauraciones; simulacros; generación de informes. Las acciones que hace el propio sistema (respaldos programados, ciclos omitidos, alertas) se registran con el usuario de sistema «SGR» (`Usuario.SGR`), nunca con un valor vacío. |
 | RN-14 | **Simulacros.** Debe hacerse un simulacro de restauración, sobre destino alternativo, al menos cada 90 días (**SM-10**). |
 | RN-15 | **Cifrado.** Los datos se cifran con AES-256 en reposo y viajan por TLS 1.2/1.3. |
 | RN-16 | **Permisos por rol.** Responsable de Respaldos: opera y solicita. Dirección: autoriza, administra usuarios, consulta auditoría e informes, y ve el estado de los respaldos en solo lectura. Gerente de Administración: solo lectura de TANGO. |
 | RN-17 | **Sin conexión.** Si no hay Internet, la tarea queda EN_COLA sin consumir reintentos y sin perderse; se envía en orden cronológico al recuperarse la conexión. |
 | RN-18 | **Acceso.** La contraseña tiene al menos 12 caracteres; 5 intentos fallidos bloquean la cuenta 15 minutos. |
+| RN-19 | **Valores de la política.** *Intervalo:* número entero de minutos entre 5 y 10 (RN-03); si está vacío o es decimal (por ejemplo 5,5) se rechaza con «Ingresá el intervalo como un número entero de minutos», y si es entero pero fuera de rango, con «El intervalo debe estar entre 5 y 10 minutos». *Retención:* número entero de días entre 7 y 90, por defecto 30; 0, un negativo o 400 se rechazan con «La retención debe estar entre 7 y 90 días», y un valor vacío o decimal, con «Ingresá la retención como un número entero de días». *Hora del diferencial:* formato HH:MM, por defecto 23:00 y fuera del horario laboral (RN-20). Si hay un valor inválido no se guarda nada y la política anterior no cambia. Cambiar la política no interrumpe un respaldo en curso; el nuevo intervalo se cuenta desde el inicio del último ciclo. La etiqueta «Sin protección» no se guarda: se calcula, y la tiene todo servidor sin política (**SM-14**). |
+| RN-20 | **Horario laboral.** De lunes a viernes, de 08:00 a 18:00 (hora de Argentina, UTC-3) (**SM-14**). La hora del diferencial es válida si es anterior a las 08:00 o igual o posterior a las 18:00 (07:59 y 18:00 son válidas; 08:00 y 17:59, no); si no, se rechaza con «La hora del diferencial debe estar fuera del horario laboral (08:00 a 18:00)». |
+| RN-21 | **Datos de una solicitud de restauración.** *Motivo:* se le quitan los espacios de los extremos; es obligatorio («El motivo es obligatorio» si queda vacío) y tiene entre 10 y 300 caracteres («El motivo debe tener entre 10 y 300 caracteres»). *Elementos* (solo restauración GRANULAR): nombres de tablas o carpetas en texto libre, uno por línea o separados por comas; entre 1 y 20 elementos, de hasta 100 caracteres cada uno y sin repetidos. Mensajes: «Indicá al menos un elemento a restaurar», «Se pueden indicar hasta 20 elementos» y «Cada elemento puede tener hasta 100 caracteres». El SGR no comprueba que existan al solicitar: lo hace Acronis al ejecutar (HU-016) y, si no existen, la restauración queda FALLIDA con ese motivo (**SM-15**). |
+| RN-22 | **Elegir un punto de restauración.** Con incrementales cada 5 minutos un servidor puede tener unos 8.600 puntos vigentes, por lo que la pantalla muestra solo los vigentes, del más reciente al más antiguo, en páginas de 20, filtrados por un rango de fechas (por defecto, los últimos 7 días) y con la casilla «Solo diarios» (completo y diferenciales). Si el rango no tiene puntos se muestra «No hay puntos de restauración en el rango elegido»; si el servidor no tiene ninguno vigente, «No hay puntos de restauración vigentes para este servidor». Al enviar se vuelve a comprobar la vigencia: si el punto venció, «El punto elegido venció. Elegí otro». |
+| RN-23 | **Tiempos de espera de Acronis.** Cada llamada de control a la API de Acronis (iniciar el respaldo, consultar su estado) espera hasta 30 segundos, y la validación de integridad (RN-07), hasta 10 minutos. El respaldo en sí no tiene tiempo de espera fijo, porque depende del volumen (el completo inicial tarda unas 11 horas). Al agotarse un tiempo de espera, el intento falla con el motivo «Acronis no respondió: tiempo de espera agotado» y consume un reintento (RN-06); no es una falta de conexión (RN-17) (**SM-16**). |
 
 ## 9. Supuestos de modelado
 
@@ -178,6 +183,9 @@ Se desarrollan con escenario completo en [04 – RNF y arquitectura](04-rnf-y-ar
 | SM-11 | Solo se modela la solución 1 (Acronis Cloud). Las soluciones 2 y 3 del trabajo de OAS son alternativas descartadas en los ADR. | Derivado de OAS |
 | SM-12 | El SGR tiene interfaz web y su propia autenticación con usuario y contraseña. | **[A VALIDAR]** |
 | SM-13 | La verificación de integridad consiste en pedir a Acronis la validación del respaldo recién creado y aceptar solo el resultado «íntegro». Se asume que Acronis ofrece esa validación; el trabajo de campo no la describe. | **[A VALIDAR]** con la documentación del producto |
+| SM-14 | El horario laboral de Prometva es de lunes a viernes, de 08:00 a 18:00; la retención configurable es de 7 a 90 días (el trabajo de campo no da ninguno de los dos datos). «Sin protección» se calcula a partir de la falta de política. | **[A VALIDAR]** con la empresa |
+| SM-15 | Los límites de la solicitud de restauración (motivo de 10 a 300 caracteres; hasta 20 elementos de hasta 100 caracteres) y el listado de puntos (páginas de 20, últimos 7 días por defecto) son valores asumidos para que la pantalla sea usable con unos 8.600 puntos. | **[A VALIDAR]** con el Responsable de Respaldos |
+| SM-16 | Tiempos de espera de Acronis: 30 s por llamada de control y 10 min para la validación de integridad. La documentación de Acronis puede fijar otros. | **[A VALIDAR]** con la documentación del producto |
 
 ## 10. Restricciones
 
@@ -239,6 +247,7 @@ Se desarrollan con escenario completo en [04 – RNF y arquitectura](04-rnf-y-ar
 | `ResultadoDeRespaldo` | Resultado de un intento de respaldo en la nube (clase de valor). |
 | `ApiAcronis` | API externa de Acronis, adaptada por `AcronisCloudAdapter`; sus operaciones son un supuesto de modelado. |
 | `SinConexionException` | Error por falta de conexión a Internet (RN-17). |
+| `NotificacionException` | Error al enviar una notificación; la alerta no se pierde (HU-011). |
 
 ### Estados
 

@@ -37,6 +37,8 @@ interface IProveedorNube <<Adapter>> {
   + restaurar(idRespaldoNube: String, servidor: ServidorOrigen, tipo: TipoDeRestauracion, elementos: List<String>, destino: String): boolean
 }
 class AcronisCloudAdapter <<Adapter>> {
+  + {static} TIEMPO_ESPERA_LLAMADA_SEG: int = 30
+  + {static} TIEMPO_ESPERA_VALIDACION_SEG: int = 600
   - urlCuenta: String
   - credencial: String
   - api: ApiAcronis

@@ -19,7 +19,9 @@ class PlanificadorDeRespaldos <<Singleton>> {
   - politicas: Map<ServidorOrigen, PoliticaDeRespaldo>
   - PlanificadorDeRespaldos()
   + {static} obtenerInstancia(): PlanificadorDeRespaldos
-  + definirPolitica(politica: PoliticaDeRespaldo): void
+  + definirPolitica(politica: PoliticaDeRespaldo, usuario: Usuario, ahora: DateTime): void
+  + obtenerPolitica(servidor: ServidorOrigen): PoliticaDeRespaldo [0..1]
+  + estaProtegido(servidor: ServidorOrigen): boolean
   + ejecutarCiclo(servidor: ServidorOrigen, ahora: DateTime): TareaDeRespaldo [0..1]
   + lanzarRespaldoManual(servidor: ServidorOrigen, usuario: Usuario, ahora: DateTime): TareaDeRespaldo
   + lanzarRespaldoPrevioARestauracion(servidor: ServidorOrigen, usuario: Usuario, ahora: DateTime): TareaDeRespaldo
@@ -55,18 +57,28 @@ class PoliticaDeRespaldo {
   + {static} INTERVALO_MIN: int = 5
   + {static} INTERVALO_MAX: int = 10
   + {static} INTERVALO_POR_DEFECTO: int = 5
+  + {static} RETENCION_MIN_DIAS: int = 7
+  + {static} RETENCION_MAX_DIAS: int = 90
+  + {static} RETENCION_POR_DEFECTO_DIAS: int = 30
+  + {static} HORA_DIFERENCIAL_POR_DEFECTO: LocalTime = 23:00
+  + {static} INICIO_HORARIO_LABORAL: LocalTime = 08:00
+  + {static} FIN_HORARIO_LABORAL: LocalTime = 18:00
   - servidor: ServidorOrigen
   - intervaloMinutos: int
   - horaDiferencial: LocalTime
   - retencionDias: int
   + PoliticaDeRespaldo(servidor: ServidorOrigen)
+  + PoliticaDeRespaldo(servidor: ServidorOrigen, intervaloMinutos: int, retencionDias: int, horaDiferencial: LocalTime)
   + validar(): boolean
+  + errores(): List<String>
+  + {static} esHoraLaboral(hora: LocalTime): boolean
   + cumpleObjetivoDePerdida(): boolean
   + proximaEjecucion(desde: DateTime): DateTime
   + tipoParaCiclo(agente: AgenteDeRespaldo, ahora: DateTime): TipoDeRespaldo
   + servidor(): ServidorOrigen
   + intervaloMinutos(): int
   + retencionDias(): int
+  + horaDiferencial(): LocalTime
 }
 class TareaDeRespaldo {
   + {static} MAX_REINTENTOS: int = 3

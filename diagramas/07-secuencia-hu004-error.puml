@@ -39,8 +39,15 @@ PLA -> TAR : estado()
 loop mientras estado = EN_REINTENTO
   CLK -> PLA : reintentar(tarea, ahora)
   PLA -> AGE : ejecutarRespaldo(tarea)
+  AGE -> TAR : iniciar(ahora)
+  note right of TAR : EN_REINTENTO -> EN_EJECUCION\n[pasó 1 minuto]
+  AGE -> EST : ejecutar(STRUMIS, proveedor, agente)
+  EST -> ADA : ejecutarRespaldo(STRUMIS, INCREMENTAL, idPuntoBase)
+  ADA --> EST : resultado (exitoso, idRespaldoNube)
+  EST --> AGE : resultado
   alt el reintento tiene éxito
     AGE -> TAR : marcarVerificando(idRespaldoNube)
+    note right of TAR : EN_EJECUCION -> VERIFICANDO
     AGE -> ADA : validarRespaldo(idRespaldoNube)
     AGE -> TAR : completar(ahora)
   else el reintento falla
@@ -56,8 +63,8 @@ alt estado = FALLIDA (reintentos agotados)
   ALE -> ALR : destinatarios()
   ALR --> ALE : [RESPONSABLE_DE_RESPALDOS, DIRECCION]
   ALE -> NOT : notificar(alerta, roles)
-  ALE -> AUD : registrar(null, ALERTA_GENERADA, "STRUMIS", "CRITICA", ahora)
-  PLA -> AUD : registrar(null, RESPALDO_FINALIZADO, "STRUMIS", "FALLIDA", ahora)
+  ALE -> AUD : registrar(SGR, ALERTA_GENERADA, "STRUMIS", "CRITICA", ahora)
+  PLA -> AUD : registrar(SGR, RESPALDO_FINALIZADO, "STRUMIS", "FALLIDA", ahora)
 else estado = COMPLETADA (algún reintento tuvo éxito)
   note over PLA : no se genera alerta (HU-005);\ncontinúa como en el flujo principal
 end

@@ -24,6 +24,11 @@ class SolicitudDeRestauracion {
   - resolutor: Usuario [0..1]
   - motivoRechazo: String [0..1]
   - fechaSolicitud: DateTime
+  + {static} MOTIVO_MIN: int = 10
+  + {static} MOTIVO_MAX: int = 300
+  + {static} ELEMENTOS_MAX: int = 20
+  + {static} ELEMENTO_LARGO_MAX: int = 100
+  + {static} validar(tipo: TipoDeRestauracion, elementos: List<String>, motivo: String): List<String>
   + SolicitudDeRestauracion(punto: PuntoDeRestauracion, tipo: TipoDeRestauracion, elementos: List<String>, motivo: String, solicitante: Usuario, ahora: DateTime)
   + autorizar(resolutor: Usuario): void
   + rechazar(resolutor: Usuario, motivo: String): void
@@ -33,6 +38,10 @@ class SolicitudDeRestauracion {
   + estado(): EstadoDeSolicitud
 }
 class ServicioDeRestauracion {
+  + {static} TAMANO_PAGINA: int = 20
+  + {static} DIAS_RANGO_POR_DEFECTO: int = 7
+  + puntosVigentes(servidor: ServidorOrigen, desde: DateTime, hasta: DateTime, soloDiarios: boolean, pagina: int, ahora: DateTime): List<PuntoDeRestauracion>
+  + contarPuntosVigentes(servidor: ServidorOrigen, desde: DateTime, hasta: DateTime, soloDiarios: boolean, ahora: DateTime): int
   + solicitar(punto: PuntoDeRestauracion, tipo: TipoDeRestauracion, elementos: List<String>, motivo: String, solicitante: Usuario, ahora: DateTime): SolicitudDeRestauracion
   + autorizar(solicitud: SolicitudDeRestauracion, resolutor: Usuario): void
   + rechazar(solicitud: SolicitudDeRestauracion, resolutor: Usuario, motivo: String): void
@@ -43,6 +52,7 @@ class Usuario {
   + {static} MAX_INTENTOS: int = 5
   + {static} BLOQUEO_MINUTOS: int = 15
   + {static} LONGITUD_MIN_CONTRASENA: int = 12
+  + {static} SGR: Usuario
   - id: long
   - nombre: String
   - correo: String
@@ -58,7 +68,14 @@ class Usuario {
   + estaBloqueado(ahora: DateTime): boolean
   + tieneRol(rol: Rol): boolean
   + validarContrasena(contrasena: String): boolean
+  + esDeSistema(): boolean
+  + nombre(): String
 }
+note right of Usuario
+  SGR es el usuario de sistema (sin rol ni contraseña,
+  no puede iniciar sesión): firma en la auditoría
+  las acciones automáticas del propio SGR.
+end note
 class InformeMensual {
   - anio: int
   - mes: int

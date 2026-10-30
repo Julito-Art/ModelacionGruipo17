@@ -37,7 +37,7 @@ AGC --> PLA : agente (una instancia por servidor)
 PLA -> AGE : hayRespaldoEnCurso()
 AGE --> PLA : enCurso
 alt enCurso = true (RN-05: ciclo omitido)
-  PLA -> AUD : registrar(null, CICLO_OMITIDO, "STRUMIS", "omitido", ahora)
+  PLA -> AUD : registrar(SGR, CICLO_OMITIDO, "STRUMIS", "omitido", ahora)
   PLA --> CLK : null
 else no hay respaldo en curso
   PLA -> POL : tipoParaCiclo(agente, ahora)
@@ -45,7 +45,7 @@ else no hay respaldo en curso
   PLA -> PLA : lanzar(STRUMIS, INCREMENTAL, PROGRAMADO, null, ahora)
   PLA -> TAR : TareaDeRespaldo(STRUMIS, INCREMENTAL, PROGRAMADO, null, ahora)
   note right of TAR : estado = PROGRAMADA
-  PLA -> AUD : registrar(null, RESPALDO_INICIADO, "STRUMIS", "iniciado", ahora)
+  PLA -> AUD : registrar(SGR, RESPALDO_INICIADO, "STRUMIS", "iniciado", ahora)
   PLA -> AGE : ejecutarRespaldo(tarea)
   AGE -> TAR : iniciar(ahora)
   note right of TAR : estado = EN_EJECUCION
@@ -81,7 +81,7 @@ else no hay respaldo en curso
     PLA -> TAR : generarPuntoDeRestauracion(retencionDias)
     TAR -> PUN : PuntoDeRestauracion(tarea, retencionDias)
     PLA -> ALE : cerrarAlertas(STRUMIS, ahora)
-    PLA -> AUD : registrar(null, RESPALDO_FINALIZADO, "STRUMIS", "COMPLETADA", ahora)
+    PLA -> AUD : registrar(SGR, RESPALDO_FINALIZADO, "STRUMIS", "COMPLETADA", ahora)
   else estado = EN_COLA
     note over PLA : queda en cola; se reenvía al recuperarse la conexión\ncon reanudarEnCola(STRUMIS, ahora)
   end

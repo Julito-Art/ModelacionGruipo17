@@ -28,6 +28,7 @@ interface IProveedorNube <<Adapter>>
 class AcronisCloudAdapter <<Adapter>>
 class ApiAcronis <<externo>>
 class SinConexionException <<exception>>
+class NotificacionException <<exception>>
 class GestorDeAlertas
 class Alerta
 interface INotificador
@@ -67,6 +68,7 @@ IEstrategiaDeRespaldo ..> IProveedorNube : usa
 IEstrategiaDeRespaldo ..> ResultadoDeRespaldo : devuelve
 IProveedorNube ..> ResultadoDeRespaldo : devuelve
 IProveedorNube ..> SinConexionException : <<throws>>
+INotificador ..> NotificacionException : <<throws>>
 GestorDeAlertas ..> ServicioDeAuditoria
 ServicioDeRestauracion ..> PlanificadorDeRespaldos : respaldo previo
 ServicioDeRestauracion ..> AgenteDeRespaldo : restaurar

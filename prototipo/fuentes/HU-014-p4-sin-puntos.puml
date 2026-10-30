@@ -1,0 +1,13 @@
+@startsalt
+scale 1.8
+{+
+<b>SGR · Nueva solicitud de restauración
+==
+Servidor | ^STRUMIS^
+..
+<color:red><b>No hay puntos de restauración vigentes para este servidor
+<i>Los puntos de restauración se conservan 30 días. Revisá el estado de los respaldos o consultá a Dirección.
+..
+[ Enviar solicitud (deshabilitado) ] | [ Volver ]
+}
+@endsalt

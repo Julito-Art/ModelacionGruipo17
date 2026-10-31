@@ -126,9 +126,19 @@ interface IEstrategiaDeRespaldo <<Strategy>>
 interface IProveedorNube <<Adapter>>
 class GestorDeAlertas
 class ServicioDeAuditoria
+interface IRepositorioDePoliticas {
+  + guardar(politica: PoliticaDeRespaldo): void
+  + obtener(servidor: ServidorOrigen): PoliticaDeRespaldo [0..1]
+}
+interface IRepositorioDeTareas {
+  + guardar(tarea: TareaDeRespaldo): void
+  + pendientes(): List<TareaDeRespaldo>
+}
 class Usuario
 PlanificadorDeRespaldos "1" --> "0..2" PoliticaDeRespaldo : gestiona
 PlanificadorDeRespaldos "1" --> "1" GestorDeAlertas : usa
+PlanificadorDeRespaldos "1" --> "1" IRepositorioDePoliticas : guarda políticas en
+PlanificadorDeRespaldos "1" --> "1" IRepositorioDeTareas : guarda tareas en
 PlanificadorDeRespaldos "1" --> "1" ServicioDeAuditoria : usa
 AgenteDeRespaldo "1" --> "1" IProveedorNube : proveedor
 AgenteDeRespaldo "1" o-- "3" IEstrategiaDeRespaldo : estrategias

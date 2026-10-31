@@ -33,21 +33,33 @@ class Alerta {
   - tareaOrigen: TareaDeRespaldo [0..1]
   - creada: DateTime
   - cerrada: DateTime [0..1]
+  - correoEnviado: boolean
+  - motivoFalloCorreo: String [0..1]
   + Alerta(tipo: TipoDeAlerta, severidad: Severidad, servidor: ServidorOrigen, mensaje: String, tareaOrigen: TareaDeRespaldo, ahora: DateTime)
   + elevarSeveridad(nueva: Severidad): void
   + cerrar(ahora: DateTime): void
+  + marcarCorreoEnviado(): void
+  + marcarCorreoFallido(motivo: String): void
+  + correoEnviado(): boolean
   + destinatarios(): List<Rol>
   + estado(): EstadoAlerta
   + tipo(): TipoDeAlerta
   + servidor(): ServidorOrigen
 }
 interface INotificador {
-  + notificar(alerta: Alerta, roles: List<Rol>): void
+  + notificar(alerta: Alerta, roles: List<Rol>): void <<throws NotificacionException>>
 }
 class NotificadorPorCorreo {
   - servidorSmtp: String
   - remitente: String
-  + notificar(alerta: Alerta, roles: List<Rol>): void
+  + notificar(alerta: Alerta, roles: List<Rol>): void <<throws NotificacionException>>
+}
+interface IRepositorioDeUsuarios {
+  + usuariosActivosConRol(rol: Rol): List<Usuario>
+}
+class NotificacionException <<exception>> {
+  - motivo: String
+  + motivo(): String
 }
 class ServicioDeAuditoria {
   + registrar(usuario: Usuario, accion: AccionAuditada, objetivo: String, resultado: String, ahora: DateTime): RegistroDeAuditoria
@@ -62,9 +74,14 @@ class RegistroDeAuditoria <<inmutable>> {
   - fechaHora: DateTime
 }
 class TareaDeRespaldo
+class Usuario
 class PlanificadorDeRespaldos <<Singleton>>
 class ServicioDeRestauracion
 INotificador <|.. NotificadorPorCorreo
+NotificadorPorCorreo "1" --> "1" IRepositorioDeUsuarios : obtiene los correos por rol
+IRepositorioDeUsuarios ..> Usuario : devuelve
+INotificador ..> NotificacionException : <<throws>>
+GestorDeAlertas ..> NotificacionException : captura y marca el correo como fallido
 PlanificadorDeRespaldos "1" --> "1" GestorDeAlertas : usa
 PlanificadorDeRespaldos "1" --> "1" ServicioDeAuditoria : usa
 Alerta "*" --> "0..1" TareaDeRespaldo : origen

@@ -11,7 +11,7 @@
 | ID | Criterio | Nivel | Tipo | Precondiciones | Pasos | Datos de entrada | Resultado esperado | RNF |
 |---|---|---|---|---|---|---|---|---|
 | CP-014-01 | CA-1 | Unitario | normal | Puntos de TANGO de hace 2, 29 y 31 días. | Filtrar con `PuntoDeRestauracion.estaVigente(ahora)`. | PR-A, PR-B y PR-C; ahora = 26/10/2026 23:00. | Quedan PR-A y PR-B; PR-C se descarta. | — |
-| CP-014-02 | CA-1 | Unitario | límite | Un punto con `vigenteHasta = fechaHora + 30 días`. | Evaluar `estaVigente` con distintas antigüedades. | 29 días 23 h 59 min y 30 días 0 h 1 min. | El primero es vigente; el segundo está vencido. | — |
+| CP-014-02 | CA-1 | Unitario | límite | Un punto con `vigenteHasta = fechaHora + retención de la política` (política con la retención por defecto de 30 días). | Evaluar `estaVigente` con distintas antigüedades. | 29 días 23 h 59 min y 30 días 0 h 1 min. | El primero es vigente; el segundo está vencido. | — |
 | CP-014-03 | CA-2 | Integración | normal | Sesión de Responsable; punto PR-A. | Llamar a `ServicioDeRestauracion.solicitar` con tipo TOTAL y el motivo indicado. | PR-A; TOTAL; «Pérdida de datos por ataque». | Solicitud PENDIENTE con solicitante, fecha y punto elegido. | — |
 | CP-014-04 | CA-2 | Integración | normal | Solicitud creada en CP-014-03. | Consultar la auditoría. | — | Registro RESTAURACION_SOLICITADA con usuario resp.prueba@prometva.test. | RNF-06 |
 | CP-014-05 | CA-3 | Unitario | negativo | Ninguna. | Llamar a `solicitar` con motivo vacío y con motivo de tres espacios. | Motivos «» y «   ». | Ambos se rechazan con «El motivo es obligatorio» y no se crea solicitud. | — |

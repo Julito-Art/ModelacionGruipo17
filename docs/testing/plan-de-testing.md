@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Entregable** | Punto 9 de la consigna (Parcial 3) |
-| **Estado** | Borrador v1 – 26/10/2026 |
+| **Estado** | Versión final – 30/10/2026 |
 | **Casos de prueba** | [HU-003](casos-HU-003.md), [HU-004](casos-HU-004.md), [HU-011](casos-HU-011.md) y [HU-014](casos-HU-014.md) |
 | **Base** | [00 – Documento maestro](../00-documento-maestro.md), [04 – RNF](../04-rnf-y-arquitectura.md) y las historias de [`docs/historias/`](../historias/) |
 
@@ -33,13 +33,13 @@
 | **E2E** | Flujos completos desde la interfaz web: definir una política, ver una alerta, solicitar una restauración. | Alrededor del 10 al 15 % |
 | **Aceptación del usuario** | Prueba de usabilidad con personas sin conocimientos técnicos (RNF-07). | Del 1 al 5 %: una por criterio de usabilidad |
 
-**Distribución real de los 42 casos diseñados:**
+**Distribución real de los 51 casos diseñados:**
 
 | Nivel | Casos | Porcentaje |
 |---|---|---|
-| Unitario | 13 | 31 % |
-| Integración | 23 | 55 % |
-| E2E | 5 | 12 % |
+| Unitario | 19 | 37 % |
+| Integración | 24 | 47 % |
+| E2E | 7 | 14 % |
 | Aceptación | 1 | 2 % |
 
 **Esta distribución se aparta de la pirámide clásica** (con más pruebas unitarias que de integración) a propósito: la lógica central del SGR (planificador, agente, estrategias, adaptador y estados de la tarea) es colaboración entre clases, así que la mayor parte de los casos son de integración. Las reglas de una sola clase se cubren con casos unitarios y los flujos de pantalla, con pocos casos E2E.
@@ -100,8 +100,8 @@ Como todavía no se eligió el lenguaje de implementación, se nombra el tipo de
 
 | Historia | Criterios | Casos | Archivo |
 |---|---|---|---|
-| HU-003 | 6 | 11 | [casos-HU-003.md](casos-HU-003.md) |
+| HU-003 | 7 | 14 | [casos-HU-003.md](casos-HU-003.md) |
 | HU-004 | 6 | 11 | [casos-HU-004.md](casos-HU-004.md) |
 | HU-011 | 6 | 9 | [casos-HU-011.md](casos-HU-011.md) |
-| HU-014 | 7 | 11 | [casos-HU-014.md](casos-HU-014.md) |
-| **Total** | **25** | **42** | |
+| HU-014 | 9 | 17 | [casos-HU-014.md](casos-HU-014.md) |
+| **Total** | **28** | **51** | |

@@ -22,7 +22,7 @@ El **SGR** se muestra como una caja negra. Alrededor están todos los actores hu
 | Responsable de Respaldos | SGR | Configuración de servidores, política de respaldo y credenciales de Acronis; órdenes de respaldo manual; solicitudes de restauración; consultas. |
 | SGR | Responsable de Respaldos | Estado de los respaldos, alertas y resultados de tareas. |
 | Dirección | SGR | Autorización o rechazo de restauraciones; altas, bajas y cambios de rol de usuarios; consultas de estado, de auditoría y de informes. |
-| SGR | Dirección | Alertas críticas, solicitudes de restauración pendientes, estado de los respaldos (solo lectura) e informes. |
+| SGR | Dirección | Alertas críticas, lista de solicitudes de restauración pendientes (la ve Dirección en el SGR, HU-015; no se envía un correo por cada solicitud), estado de los respaldos (solo lectura) e informes. |
 | Gerente de Administración | SGR | Consulta del estado de TANGO. |
 | SGR | Gerente de Administración | Estado de los respaldos de TANGO (solo lectura). |
 | SGR | Acronis Cloud | Órdenes de respaldo y restauración; credenciales. |

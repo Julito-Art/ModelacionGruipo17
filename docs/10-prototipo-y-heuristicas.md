@@ -191,7 +191,7 @@ Las severidades con flecha indican el valor **antes → después** de la correcc
 
 **Problema encontrado:** La lista incluía puntos vencidos (hace 31 días) y se enviaba sin resumen ni indicación de vigencia.
 
-**Corrección:** Solo puntos vigentes, aclaración «últimos 30 días» y confirmación posterior del estado PENDIENTE.
+**Corrección:** Solo puntos vigentes, aclaración de la retención de la política (30 días por defecto) y confirmación posterior del estado PENDIENTE.
 
 | Antes | Después |
 |---|---|

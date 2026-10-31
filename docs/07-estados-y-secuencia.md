@@ -38,7 +38,7 @@ Cada evento es un **método de `TareaDeRespaldo`** del diagrama de clases (vista
 
 **Estados finales:** `COMPLETADA` y `FALLIDA`. Una tarea final no cambia más; un nuevo ciclo crea otra tarea.
 
-**Cómo se cuentan los reintentos.** `registrarFallo` lleva la tarea a `EN_REINTENTO` mientras `reintentos < MAX_REINTENTOS` (3) y a `FALLIDA` cuando ya se usaron los 3. Como cada reintento vuelve a ejecutar el respaldo, una tarea que nunca tiene éxito hace **4 intentos** en total, separados por 1 minuto (unos 3 minutos desde el primer fallo, menos que el intervalo mínimo de 5 minutos; SM-05).
+**Cómo se cuentan los reintentos.** `reintentos` cuenta los reintentos ya consumidos. `registrarFallo` **compara antes de sumar**: si `reintentos < MAX_REINTENTOS` (3), suma 1 y lleva la tarea a `EN_REINTENTO`; si ya es 3, la lleva a `FALLIDA` sin sumar. Así, el primer fallo deja `reintentos = 1` (como en HU-004 CA-2) y el cuarto fallo deja la tarea `FALLIDA` con `reintentos = 3`. Como cada reintento vuelve a ejecutar el respaldo, una tarea que nunca tiene éxito hace **4 intentos** en total, separados por 1 minuto (unos 3 minutos desde el primer fallo, menos que el intervalo mínimo de 5 minutos; SM-05).
 
 **Falta de conexión.** Pasar a `EN_COLA` **no** consume reintentos (RN-17): la tarea espera hasta que `PlanificadorDeRespaldos.reanudarEnCola` la vuelve a lanzar.
 

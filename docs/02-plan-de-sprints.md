@@ -12,7 +12,7 @@
 - **Equipo supuesto:** 4 integrantes con **dedicación completa** durante toda la semana (incluido el fin de semana del 24 y 25/10).
 - **Capacidad supuesta:** **10 story points por día** de equipo = 4 personas × 2,5 SP por persona y día. Con esa velocidad, la capacidad es de 30 SP en el Sprint 1 (3 días) y de 20 SP en cada uno de los Sprints 2 y 3 (2 días).
 - **Criterio:** 1 SP equivale a unas 3 horas de trabajo efectivo de una persona. Esta calibración reemplaza a la de la versión anterior (dedicación parcial, 5 SP por persona cada 2 semanas), que con una sola semana habría dado apenas unos 10 SP en total. Como no hay historial de velocidad, el valor es una **suposición a recalibrar** al cierre del Sprint 1. Ningún sprint se carga al 100 % para dejar margen a reuniones y retrabajo.
-- **Alcance:** este plan cubre solo los Sprints 1 a 3 del plan original (11 de las 23 HU del backlog, 53 SP). Las 11 HU restantes (42 SP) quedan en el backlog sin sprint asignado (ver sección 6).
+- **Alcance:** este plan cubre solo los Sprints 1 a 3 del plan original (12 de las 23 HU del backlog: 4 + 4 + 4, 53 SP). Las 11 HU restantes (42 SP) quedan en el backlog sin sprint asignado (ver sección 6).
 - **Regla de planificación:** ningún sprint supera la capacidad; las dependencias se respetan (una HU nunca va antes de lo que necesita).
 
 ## 2. Escala de estimación

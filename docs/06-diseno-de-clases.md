@@ -11,7 +11,7 @@
 
 ## 1. Cómo se lee el diseño
 
-El diagrama de clases de diseño del SGR tiene **25 clases e interfaces y 11 enumeraciones**. Para que se pueda leer, se presenta en **una vista general** (solo nombres, con todas las asociaciones y sus multiplicidades) y **cuatro vistas de detalle** con atributos tipados y métodos con firma completa. Las seis imágenes son vistas de un mismo modelo y se generaron desde una sola definición, por lo que no se contradicen.
+El diagrama de clases de diseño del SGR tiene **28 clases e interfaces y 11 enumeraciones**. Para que se pueda leer, se presenta en **una vista general** (solo nombres, con todas las asociaciones y sus multiplicidades) y **cuatro vistas de detalle** con atributos tipados y métodos con firma completa. Las seis imágenes son vistas de un mismo modelo y se generaron desde una sola definición, por lo que no se contradicen.
 
 Convenciones: `[0..1]` indica un atributo o resultado opcional; los colores marcan los patrones (naranja: Singleton y Multiton; verde: Strategy; azul: Adapter; gris: sistema externo); los *getters* triviales que no se usan en los diagramas de estados y de secuencia se omiten; las asociaciones hacia enumeraciones no se dibujan (son atributos tipados). Los servicios de aplicación del documento 04 (*Servicio de Alertas*, *de Auditoría*, *de Restauración*) son las clases `GestorDeAlertas`, `ServicioDeAuditoria` y `ServicioDeRestauracion`.
 
@@ -82,6 +82,9 @@ Fuente: [`06-enumeraciones.puml`](../diagramas/06-enumeraciones.puml)
 | `ApiAcronis` | Clase externa · Adaptee | API de Acronis (operaciones supuestas). | Acronis Cloud (externo) | HU-002, 004 | CU-02, 04 |
 | `SinConexionException` | Excepción | Falta de conexión a Internet (RN-17). | Puerto IProveedorNube | HU-007 | CU-07 |
 | `NotificacionException` | Excepción | Falla del envío de una notificación (por ejemplo, el correo); la alerta no se pierde (CA-3 de HU-011). | Puerto INotificador | HU-011, 013 | CU-10, 11 |
+| `IRepositorioDePoliticas` | Interfaz · puerto | Guarda y recupera la política de cada servidor para que sobreviva a un reinicio (RNF-03, ADR-002). | Persistencia | HU-003, 004 | CU-03, 04 |
+| `IRepositorioDeTareas` | Interfaz · puerto | Guarda las tareas de respaldo y devuelve las pendientes al reiniciar el servicio (RNF-03). | Persistencia | HU-004, 005, 007 | CU-04, 06, 07 |
+| `IRepositorioDeUsuarios` | Interfaz · puerto | Da los usuarios activos de un rol, de donde el notificador saca los correos. | Persistencia | HU-011, 013, 018 | CU-10, 11, 16 |
 | `GestorDeAlertas` | Clase de servicio | Genera, eleva y cierra alertas y las notifica. | Servicio de Alertas | HU-011, 012, 013 | CU-10, 11 |
 | `Alerta` | Clase | Aviso con tipo, severidad y estado; sabe a qué roles se notifica. | Servicio de Alertas | HU-011, 012, 013 | CU-10, 11 |
 | `INotificador` | Interfaz · puerto | Contrato para enviar notificaciones. | Puerto INotificador | HU-011, 013 | CU-10, 11 |
@@ -205,15 +208,15 @@ Toda historia tiene clases que la implementan y toda clase del catálogo aparece
 |---|---|
 | HU-001 | `AgenteDeRespaldo.obtenerInstancia` y `existeInstancia` (un agente por `ServidorOrigen`); `ServicioDeAuditoria.registrar` (`REGISTRO_DE_SERVIDOR`) |
 | HU-002 | `IProveedorNube.configurar` y `probarConexion`; `AcronisCloudAdapter`; `ApiAcronis.autenticar` |
-| HU-003 | `PoliticaDeRespaldo` (constructor completo, `validar`, `errores`, `esHoraLaboral`, `cumpleObjetivoDePerdida`); `PlanificadorDeRespaldos` (`definirPolitica(politica, usuario, ahora)`, `obtenerPolitica`, `estaProtegido`); `Usuario.tieneRol` |
+| HU-003 | `IRepositorioDePoliticas`; `PoliticaDeRespaldo` (constructor completo, `validar`, `errores`, `esHoraLaboral`, `cumpleObjetivoDePerdida`); `PlanificadorDeRespaldos` (`definirPolitica(politica, usuario, ahora)`, `obtenerPolitica`, `estaProtegido`); `Usuario.tieneRol` |
 | HU-004 | `PlanificadorDeRespaldos` (`ejecutarCiclo`, `lanzar`, `procesarResultado`); `AgenteDeRespaldo` (`ejecutarRespaldo`, `hayRespaldoEnCurso`); `PoliticaDeRespaldo.tipoParaCiclo`; `IEstrategiaDeRespaldo` y sus tres implementaciones; `AcronisCloudAdapter`; `TareaDeRespaldo`; `PuntoDeRestauracion` |
-| HU-005 | `TareaDeRespaldo` (`registrarFallo`, `puedeReintentar`, `MAX_REINTENTOS`); `PlanificadorDeRespaldos.reintentar` |
+| HU-005 | `IRepositorioDeTareas`; `TareaDeRespaldo` (`registrarFallo`, `puedeReintentar`, `MAX_REINTENTOS`); `PlanificadorDeRespaldos.reintentar` |
 | HU-006 | `PlanificadorDeRespaldos.lanzarRespaldoManual`; `TipoDeDisparo.MANUAL`; `ServicioDeAuditoria.registrar` |
 | HU-007 | `TareaDeRespaldo.marcarEnCola`; `SinConexionException`; `PlanificadorDeRespaldos.reanudarEnCola` |
 | HU-008 | `IProveedorNube.validarRespaldo`; `TareaDeRespaldo` (`marcarVerificando`, `completar`); `PuntoDeRestauracion` |
 | HU-009 | `AgenteDeRespaldo.ultimoExitoso`; `PoliticaDeRespaldo.proximaEjecucion`; `TareaDeRespaldo.estado`; `GestorDeAlertas.alertasAbiertas` |
 | HU-010 | `TareaDeRespaldo` (servidor, estado y fechas, consultados con filtros) |
-| HU-011 | `GestorDeAlertas.alertarFalla`; `Alerta` (`correoEnviado`, `marcarCorreoFallido`); `INotificador` y `NotificadorPorCorreo`; `NotificacionException` |
+| HU-011 | `IRepositorioDeUsuarios.usuariosActivosConRol`; `GestorDeAlertas.alertarFalla`; `Alerta` (`correoEnviado`, `marcarCorreoFallido`); `INotificador` y `NotificadorPorCorreo`; `NotificacionException` |
 | HU-012 | `PlanificadorDeRespaldos.detectarAtrasos`; `GestorDeAlertas.evaluarAtraso`; `Alerta` (`elevarSeveridad`, `cerrar`) |
 | HU-013 | `Alerta.destinatarios`; `INotificador.notificar`; `NotificacionException` |
 | HU-014 | `ServicioDeRestauracion` (`solicitar`, `puntosVigentes`, `contarPuntosVigentes`); `SolicitudDeRestauracion` (`validar`); `PuntoDeRestauracion.estaVigente`; `Usuario.tieneRol` |

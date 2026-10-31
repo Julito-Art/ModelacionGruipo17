@@ -109,6 +109,14 @@ Esta historia usa el **Singleton**: `definirPolitica` se invoca siempre sobre la
 | CA-5 | gerente.prueba@prometva.test (Gerente de Administración) y direccion.prueba@prometva.test (Dirección). |
 | CA-6 | Guardado de CA-2. Registro esperado: usuario resp.prueba@prometva.test, acción CAMBIO_DE_POLITICA, objetivo STRUMIS, resultado «exitoso». |
 
+## Decisiones de implementación
+
+- **Dónde se guarda la política:** el Planificador mantiene las políticas en memoria y las guarda con `IRepositorioDePoliticas.guardar`; al arrancar las carga con `obtener`. Así no se pierden si el servidor se reinicia (RNF-03, ADR-002).
+- **Hora del diferencial y día de la semana:** la validación mira solo la hora (RN-20); el diferencial corre todos los días a esa hora.
+- **Si cambia la retención:** solo rige para los puntos nuevos; los ya creados conservan su `vigenteHasta` (RN-12).
+- **Si cambia el intervalo:** el próximo ciclo se cuenta desde el inicio del último ciclo, no desde el guardado (RN-19).
+- **Mensaje de éxito (CA-2):** «Política guardada».
+
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-001 (el servidor debe estar registrado).

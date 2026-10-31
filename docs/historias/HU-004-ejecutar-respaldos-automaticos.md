@@ -24,7 +24,7 @@ Como **Responsable de Respaldos** quiero que los respaldos de STRUMIS y TANGO se
 
 - **RN-01:** El respaldo no detiene ni modifica el uso normal de Strumis ni de Tango.
 - **RN-04:** Tipos de respaldo: completo inicial único, incremental en cada intervalo y diferencial diario.
-- **RN-05:** Un solo respaldo en ejecución por servidor; si llega un ciclo y hay uno en curso, ese ciclo se omite y se registra.
+- **RN-05:** Un solo respaldo en ejecución por servidor; si llega un ciclo y hay uno en curso (también EN_COLA), ese ciclo se omite y se registra.
 - **RN-06:** Un respaldo que falla por un error propio se reintenta hasta 3 veces (el detalle es de HU-005).
 - **RN-13:** Se registran el inicio y el resultado de cada respaldo, y los ciclos omitidos.
 
@@ -44,7 +44,7 @@ Como **Responsable de Respaldos** quiero que los respaldos de STRUMIS y TANGO se
 
 **CA-3 – Ciclo omitido si hay un respaldo en curso** · _caso de error_
 
-- **Dado** un respaldo de STRUMIS que sigue ejecutándose, verificándose o reintentándose
+- **Dado** un respaldo de STRUMIS que sigue ejecutándose, verificándose, reintentándose o en cola por falta de conexión (EN_COLA)
 - **Cuando** llega el siguiente ciclo de STRUMIS
 - **Entonces** no se crea otra tarea ni se lanza un segundo respaldo de ese servidor, y queda registrado CICLO_OMITIDO en la auditoría
 
@@ -102,6 +102,16 @@ Esta historia usa **los cuatro patrones**: Singleton (`PlanificadorDeRespaldos`)
 | CA-4 | Acronis simulado devuelve exitoso = falso con motivo «Acronis: error de autenticación». Esperado: estado EN_REINTENTO, reintentos 1, motivo guardado, 0 puntos de restauración. |
 | CA-5 | Acronis simulado lanza «sin conexión» en el ciclo de TANGO. Esperado: estado EN_COLA, reintentos 0, 0 alertas. |
 | CA-6 | Respaldo de CA-1. Registros esperados: RESPALDO_INICIADO (STRUMIS, «iniciado») y RESPALDO_FINALIZADO (STRUMIS, «COMPLETADA»), ambos con el usuario «SGR». |
+
+## Decisiones de implementación
+
+- **Quién dispara `ejecutarCiclo`:** el reloj del servicio llama a `PlanificadorDeRespaldos.ejecutarCiclo(servidor, ahora)` una vez por minuto para cada servidor; el Planificador decide con `PoliticaDeRespaldo.proximaEjecucion` si toca respaldar (si no toca, no hace nada).
+- **Conteo de reintentos:** `registrarFallo` compara antes de sumar (documento 07): 1 intento inicial + 3 reintentos = 4 intentos; la tarea queda FALLIDA con `reintentos = 3`.
+- **Tarea EN_COLA:** el ciclo siguiente se omite y se registra (RN-05).
+- **Corte de conexión durante VERIFICANDO:** la tarea pasa a EN_COLA y, al volver la conexión, se repite solo la validación (el respaldo ya está en la nube). Si el corte fue durante EN_EJECUCION, se repite el respaldo.
+- **Tiempo de espera de la validación (`TIEMPO_ESPERA_VALIDACION_SEG` = 600):** se trata como respaldo no íntegro: `registrarFallo` con «Acronis no respondió: tiempo de espera agotado»; la tarea pasa a EN_REINTENTO (o FALLIDA si ya no quedan reintentos).
+- **CA-1 y la HU-008 (Sprint 3):** en el Sprint 2 la verificación se acepta con un validador simulado del adaptador, que siempre devuelve «íntegro»; la HU-008, en el Sprint 3, lo reemplaza por la validación real de Acronis. Así HU-004 llega a COMPLETADA y se puede aceptar en su sprint.
+- **Persistencia:** las tareas se guardan con `IRepositorioDeTareas`; al reiniciar el servicio se recuperan las pendientes.
 
 ## Dependencias, estimación y Definition of Ready
 

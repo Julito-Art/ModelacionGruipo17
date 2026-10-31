@@ -17,13 +17,13 @@ Como **Responsable de Respaldos** quiero solicitar la restauración de STRUMIS o
 ## Contexto y reglas de negocio
 
 - Ante una pérdida de datos o un ataque como el que sufrió la empresa, el Responsable pide recuperar un servidor desde un punto de restauración. Pedirlo no restaura nada: la solicitud queda PENDIENTE hasta que Dirección la autorice (HU-015).
-- Todo punto de restauración existe solo si el respaldo pasó la verificación de integridad (HU-008), por lo que «verificado» se cumple siempre. Lo que se filtra en esta pantalla es la vigencia: un punto vence a los 30 días (RN-12).
+- Todo punto de restauración existe solo si el respaldo pasó la verificación de integridad (HU-008), por lo que «verificado» se cumple siempre. Lo que se filtra en esta pantalla es la vigencia: un punto vence cuando se cumple la retención de la política del servidor (por defecto 30 días; RN-12).
 - La restauración puede ser TOTAL (todo el servidor) o GRANULAR (solo los elementos que se indiquen, por ejemplo ciertas tablas o carpetas).
 
 **Reglas que aplican** (documento maestro):
 
 - **RN-10:** Toda restauración exige solicitud del Responsable y autorización de Dirección.
-- **RN-12:** Los puntos de restauración se conservan 30 días.
+- **RN-12:** Los puntos de restauración se conservan por la retención de la política del servidor vigente cuando se creó el punto (por defecto 30 días); cambiar la retención no modifica los puntos ya creados.
 - **RN-13:** Solicitar una restauración es una acción relevante y se audita.
 - **RN-16:** Solo el Responsable de Respaldos solicita restauraciones.
 - **RN-21:** Motivo de 10 a 300 caracteres; en una restauración GRANULAR, de 1 a 20 elementos de hasta 100 caracteres cada uno, en texto libre.
@@ -100,7 +100,7 @@ Como **Responsable de Respaldos** quiero solicitar la restauración de STRUMIS o
 - `ServicioDeRestauracion.puntosVigentes(servidor, desde, hasta, soloDiarios, pagina, ahora)` y `contarPuntosVigentes(...)`: dan los puntos vigentes de un servidor, paginados (`TAMANO_PAGINA` = 20), para CA-1, CA-7 y CA-8.
 - `SolicitudDeRestauracion.validar(tipo, elementos, motivo)` y sus constantes `MOTIVO_MIN`, `MOTIVO_MAX`, `ELEMENTOS_MAX` y `ELEMENTO_LARGO_MAX` (CA-3, CA-4 y CA-9).
 - `SolicitudDeRestauracion` (constructor, estado inicial PENDIENTE; ver el diagrama de estados del documento 07), con `TipoDeRestauracion` (`TOTAL`, `GRANULAR`) y `elementos: List<String>`.
-- `PuntoDeRestauracion.estaVigente(ahora)` (vigente si `ahora < vigenteHasta`, con `vigenteHasta = fechaHora + 30 días`).
+- `PuntoDeRestauracion.estaVigente(ahora)` (vigente si `ahora < vigenteHasta`, con `vigenteHasta = fechaHora + retención de la política` (por defecto 30 días)).
 - `Usuario.tieneRol(rol)` para el control de CA-6 y `ServicioDeAuditoria.registrar` con `AccionAuditada.RESTAURACION_SOLICITADA`.
 
 Esta historia **no** introduce un patrón nuevo; usa los puntos de restauración que genera `PlanificadorDeRespaldos` (Singleton) al completar los respaldos de HU-004. La historia de este grupo que usa patrones es HU-004.
@@ -116,15 +116,25 @@ Esta historia **no** introduce un patrón nuevo; usa los puntos de restauración
 
 | Criterio | Datos de prueba |
 |---|---|
-| CA-1 | Fecha actual simulada: 26/10/2026 23:00. Puntos de TANGO: PR-A (24/10/2026 23:00, DIFERENCIAL), PR-B (27/09/2026 23:00, INCREMENTAL) y PR-C (25/09/2026 23:00, INCREMENTAL). Esperado: se ofrecen PR-A y PR-B; PR-C no. |
+| CA-1 | Retención de la política: 30 días (por defecto). Fecha actual simulada: 26/10/2026 23:00. Puntos de TANGO: PR-A (24/10/2026 23:00, DIFERENCIAL), PR-B (27/09/2026 23:00, INCREMENTAL) y PR-C (25/09/2026 23:00, INCREMENTAL). Esperado: se ofrecen PR-A y PR-B; PR-C no. |
 | CA-2 | Punto PR-A; tipo TOTAL; motivo «Pérdida de datos por ataque»; usuario resp.prueba@prometva.test. Esperado: solicitud PENDIENTE; auditoría RESTAURACION_SOLICITADA. |
 | CA-3 | Motivo «» y motivo «   » (tres espacios). Esperado: rechazo en ambos casos. |
 | CA-4 | Tipo GRANULAR con 0 elementos (rechazo) y con 1 elemento «Clientes» (se acepta). |
 | CA-5 | Elementos «Facturas 2026» y «Clientes»; motivo «Recuperar facturación eliminada por error». |
 | CA-6 | direccion.prueba@prometva.test y gerente.prueba@prometva.test. |
-| CA-7 | Servidor STRUMIS sin puntos vigentes (todos de hace más de 30 días). |
+| CA-7 | Servidor STRUMIS sin puntos vigentes (todos vencidos según la retención por defecto de 30 días). |
 | CA-8 | STRUMIS con 8.640 puntos vigentes (2.016 en los últimos 7 días); filtro «Solo diarios»; un rango sin puntos (por ejemplo, el mes siguiente). Esperado: página 1 de 101 con 20 puntos; la última página (101) tiene 16. |
 | CA-9 | Motivos de 9 caracteres («Sin datos») y de 301; motivo válido de 10 («Sin datos.») y de 300; 20 y 21 elementos; elementos de 100 y de 101 caracteres. |
+
+## Decisiones de implementación
+
+- **Vigencia:** depende de la retención de la política del servidor (por defecto 30 días), no es fija (RN-12).
+- **Solicitudes pendientes:** no puede haber dos PENDIENTE para el mismo servidor; se rechaza con «Ya hay una solicitud pendiente para este servidor» (RN-22).
+- **Aviso a Dirección:** esta historia no envía correo; Dirección ve las solicitudes pendientes en su lista (HU-015).
+- **Largo del motivo:** se cuenta después de quitar los espacios de los extremos (RN-21).
+- **«Desde» posterior a «Hasta»:** se rechaza con «La fecha Desde no puede ser posterior a Hasta» (RN-22).
+- **«Solo diarios»:** el completo inicial y los diferenciales (RN-22).
+- **Punto que vence entre que se abre la pantalla y se envía:** al enviar se vuelve a comprobar la vigencia y se rechaza con «El punto elegido venció. Elegí otro» (RN-22).
 
 ## Dependencias, estimación y Definition of Ready
 

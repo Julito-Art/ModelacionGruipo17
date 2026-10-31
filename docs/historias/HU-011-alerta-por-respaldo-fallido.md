@@ -100,6 +100,15 @@ Esta historia usa el **Singleton**: es el `PlanificadorDeRespaldos` (la única i
 | CA-5 | Alerta FALLA de TANGO ABIERTA; segunda tarea de TANGO FALLIDA a las 14:20. Esperado: 1 alerta ABIERTA (no 2). |
 | CA-6 | Alerta de CA-1. Registro esperado: usuario «SGR», acción ALERTA_GENERADA, objetivo TANGO, resultado «CRITICA». |
 
+## Decisiones de implementación
+
+- **Dónde se ve la alerta en el Sprint 3:** esta historia incluye el panel de alertas mínimo (la lista de alertas abiertas, pantalla 1 del documento 10); el panel completo de estado es la HU-009. Por eso HU-011 no depende de HU-009.
+- **Dónde se guarda el motivo del fallo del correo:** en la propia alerta (`motivoFalloCorreo`), junto a `correoEnviado`.
+- **Correos por rol:** `NotificadorPorCorreo` pide los usuarios activos de cada rol a `IRepositorioDeUsuarios.usuariosActivosConRol(rol)` y envía a sus correos.
+- **Falla repetida con una alerta ya abierta (CA-5):** no se crea otra; se actualizan el motivo y la hora de la alerta y no se vuelve a enviar el correo.
+- **Cierre de alertas:** un respaldo exitoso del servidor cierra sus alertas abiertas de FALLA y de ATRASO (`cerrarAlertas`).
+- **«Menos de 1 minuto» (CA-1):** se mide desde que la alerta se crea hasta que se envía el correo.
+
 ## Dependencias, estimación y Definition of Ready
 
 - **Depende de:** HU-005 (reintentos: de ahí sale el estado FALLIDA).
